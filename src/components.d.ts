@@ -4,7 +4,27 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    BreadCrumb: typeof import('./components/layout/header/BreadCrumb.vue')['default']
+    Collapse: typeof import('./components/layout/header/Collapse.vue')['default']
+    DashBoard: typeof import('./components/layout/dashboard/DashBoard.vue')['default']
+    ElAside: typeof import('element-plus/es')['ElAside']
+    ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
+    ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
+    ElContainer: typeof import('element-plus/es')['ElContainer']
+    ElHeader: typeof import('element-plus/es')['ElHeader']
+    ElMain: typeof import('element-plus/es')['ElMain']
+    ElMenu: typeof import('element-plus/es')['ElMenu']
+    ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
+    ElTabPane: typeof import('element-plus/es')['ElTabPane']
+    ElTabs: typeof import('element-plus/es')['ElTabs']
+    Header: typeof import('./components/layout/header/Header.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    Layout: typeof import('./components/layout/index.vue')['default']
+    MenuBar: typeof import('./components/layout/menu/MenuBar.vue')['default']
+    MenuItem: typeof import('./components/layout/menu/MenuItem.vue')['default']
+    Tabs: typeof import('./components/layout/tabs/Tabs.vue')['default']
+    UserInfo: typeof import('./components/layout/header/UserInfo.vue')['default']
   }
 }
 
