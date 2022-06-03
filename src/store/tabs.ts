@@ -8,7 +8,7 @@ export const useTabsStore = defineStore({
         return {
             count: 0,
             collapse: false,
-            tabsList: data
+            tabsList: data,
         }
     },
     getters: {

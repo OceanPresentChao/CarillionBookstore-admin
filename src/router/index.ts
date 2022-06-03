@@ -1,30 +1,55 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router';
 import Layout from "@/components/layout/index.vue"
-export const constantRoutes: Array<RouteRecordRaw> = [
+export const menuRoutes: Array<RouteRecordRaw> = [
+    {
+        path: '/dashboard',
+        component: Layout,
+        meta: {
+            title: "首页",
+            icon: "carbon:home",
+            roles: ["sys:manage"]
+        }
+    },
+    {
+        path: "/company",
+        component: Layout,
+        name: "goods",
+        meta: {
+            title: "商品管理",
+            icon: "Menu",
+            roles: ["sys:goods"],
+            parentId: 0,
+        },
+        children: [
+            {
+                path: "/staff",
+                component: () => import("@/views/company/staff.vue"),
+                name: "goodCategory",
+                meta: {
+                    title: "商品分类",
+                    icon: "Menu",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+        ],
+    },
+]
+
+const constantRoutes: Array<RouteRecordRaw> = [
     {
         path: '/',
         component: Layout,
-        redirect: '/dashboard',
-        children: [
-            {
-                path: '/dashboard',
-                component: () => import('@/components/layout/dashboard/DashBoard.vue'),
-                name: 'dashboard',
-                meta: {
-                    title: '首页',
-                    icon: 'carbon:home'
-                }
-            }
-        ]
+        redirect: '/dashboard'
     },
-    // {
-    //     path: '/login',
-    //     name: 'login',
-    //     component: () => import('@/views/login/index.vue')
-    // }
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import("@/views/error/404.vue"),
+    }
 ]
 
 export const router = createRouter({
-    routes: constantRoutes,
+    routes: [...menuRoutes, ...constantRoutes],
     history: createWebHashHistory()
 })

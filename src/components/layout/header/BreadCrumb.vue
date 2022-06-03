@@ -1,24 +1,53 @@
 <template>
-    <el-breadcrumb separator="/">
-        <el-breadcrumb-item v-for="item in tabs">{{ item.meta.title }}</el-breadcrumb-item>
+    <el-breadcrumb class="app-breadcrumb" separator="/">
+        <transition-group name="breadcrumb">
+            <el-breadcrumb-item v-for="(item, index)  in levelList" :key="item.path" v-show="item.meta.title">
+                <span v-if="item.redirect === 'noredirect' || index == levelList.length - 1" class="no-redirect">{{
+                        item.meta.title
+                }}</span>
+                <router-link v-else :to="item.redirect || item.path">{{ item.meta.title }}</router-link>
+            </el-breadcrumb-item>
+        </transition-group>
     </el-breadcrumb>
 </template>
-<script setup lang='ts'>
-import type { Ref } from "vue"
+
+<script setup lang="ts">
 import type { RouteLocationMatched } from 'vue-router';
-const tabs: Ref<RouteLocationMatched[]> = ref([])
+
 const route = useRoute()
-const getBredCrumb = () => {
-    let matched = route.matched.filter(item => item.meta && item.meta.title)
-    //token不存在 , 跳转的时候，需要注意 BredCurm.vue里面判断first
+let levelList = ref<any>(null)
+watch(route, () => {
+    getBreadcrumb()
+}, { immediate: true })
+getBreadcrumb()
+function getBreadcrumb() {
+    let matched: RouteLocationMatched[] = route.matched.filter(item => item.meta.title)
     const first = matched[0]
-    if (first.path !== '/dashboard') {
-        matched = [{ path: '/dashboard', meta: { title: '首页' } } as any].concat(matched)
+    let breadmatched: any[] = matched;
+    if (first && (first.path !== '/' && first.path !== '/dashboard')) {
+        breadmatched.unshift({ path: '/', meta: { title: '首页' } })
     }
-    tabs.value = matched
+    levelList.value = breadmatched
 }
-getBredCrumb()
-watch(() => route.path, () => getBredCrumb())
+
+
 </script>
+
 <style scoped>
+.app-breadcrumb,
+.el-breadcrumb {
+    display: inline-block;
+    height: 1.25rem;
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+    margin: auto 0;
+    margin-left: 1rem;
+}
+
+
+.app-breadcrumb .no-redirect,
+.el-breadcrumb .no-redirect {
+    color: #97a8be;
+    cursor: text;
+}
 </style>

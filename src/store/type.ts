@@ -1,7 +1,6 @@
 export const enum Types {
     USER = 'userStore',
     TABS = 'tabsStore',
-    COLLAPSE = 'collapseStore',
     MENU = 'menuStore'
 }
 

@@ -1,26 +1,31 @@
 <template>
     <el-container class="layout">
-        <el-aside width="auto" class="aside">
-            <MenuBar></MenuBar>
-        </el-aside>
+        <MenuBar></MenuBar>
         <el-container>
             <el-header class="header">
                 <Header></Header>
             </el-header>
             <el-main class="main">
                 <Tabs />
-                <router-view></router-view>
+                <router-view v-slot="{ Component }">
+                    <transition name="fade" mode="out-in">
+                        <component :is="Component" />
+                    </transition>
+                </router-view>
             </el-main>
         </el-container>
     </el-container>
 </template>
     
 <script setup lang='ts'>
+// console.log(import.meta.env.VITE_APP_API);
 </script>
     
 <style scoped>
 .layout {
+    position: relative;
     height: 100%;
+    width: 100%;
 }
 
 .layout .aside {

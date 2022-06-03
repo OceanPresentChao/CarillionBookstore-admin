@@ -5,14 +5,14 @@
     </span>
 </template>
 <script setup lang='ts'>
+import { useMenuStore } from '@/store/menu';
 import { computed } from 'vue'
-import { useCollapseStore } from '@/store/collapse'
-const collapseStore = useCollapseStore()
+const menuStore = useMenuStore()
 const status = computed(() => {
-    return collapseStore.getCollapse
+    return menuStore.collapse
 })
 const changeIcon = () => {
-    collapseStore.setCollapse(!status.value)
+    menuStore.setCollapse(!status.value)
 }
 </script>
 <style scoped>

@@ -76,18 +76,18 @@ watch(() => route.path, () => {
 </script>
 <style scoped>
 :deep(.el-tabs__header) {
-    margin: 0px;
+    margin: 0.5rem 0;
 }
 
 :deep(.el-tabs__item) {
-    height: 26px !important;
-    line-height: 26px !important;
+    height: 1.5rem !important;
+    line-height: 1.5rem !important;
     text-align: center !important;
     border: 1px solid #d8dce5 !important;
     margin: 0px 3px !important;
     color: #495060;
-    font-size: 12px !important;
-    padding: 0xp 10px !important;
+    font-size: 0.8rem !important;
+    padding: 0xp 1rem !important;
 }
 
 :deep(.el-tabs__nav) {
