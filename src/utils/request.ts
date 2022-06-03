@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import store from '../store'
+// import store from '../store'
 import { getToken } from '@/utils/auth'
 
 // 创建axios实例

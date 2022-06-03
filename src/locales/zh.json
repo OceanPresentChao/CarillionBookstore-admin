@@ -1,0 +1,11 @@
+{
+    "book": "图书管理",
+    "booklist": "图书列表",
+    "bookcate": "图书分类",
+    "bookbrand": {
+        "brand": "出版社管理",
+        "searchhover": "出版社名称/关键字",
+        "name": "出版社名称",
+        "firstLetter": "首字母"
+    }
+}

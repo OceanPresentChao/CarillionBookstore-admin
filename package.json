@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@iconify/vue": "^3.2.1",
+    "@intlify/vite-plugin-vue-i18n": "^3.4.0",
     "@types/js-cookie": "^3.0.2",
     "@types/node": "^16.11.25",
     "@vitejs/plugin-vue": "^2.2.2",

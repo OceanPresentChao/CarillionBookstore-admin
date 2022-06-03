@@ -8,8 +8,3 @@ export interface Tab {
     title: string,
     path: string
 }
-
-export interface Collapse {
-    count: number,
-    collapse: boolean
-}

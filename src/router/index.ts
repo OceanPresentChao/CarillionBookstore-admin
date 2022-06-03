@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router';
-import Layout from "@/components/layout/index.vue"
+import Layout from "@/layout/index.vue"
+const { t } = useI18n()
 export const menuRoutes: Array<RouteRecordRaw> = [
     {
         path: '/dashboard',
@@ -16,7 +17,7 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         name: "goods",
         meta: {
             title: "商品管理",
-            icon: "Menu",
+            icon: "carbon:product",
             roles: ["sys:goods"],
             parentId: 0,
         },
@@ -27,7 +28,30 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 name: "goodCategory",
                 meta: {
                     title: "商品分类",
-                    icon: "Menu",
+                    icon: "carbon:categories",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+        ],
+    }, {
+        path: "/book",
+        component: Layout,
+        name: "books",
+        meta: {
+            title: t("book"),
+            icon: "carbon:product",
+            roles: ["sys:goods"],
+            parentId: 0,
+        },
+        children: [
+            {
+                path: "/staff",
+                component: () => import("@/views/company/staff.vue"),
+                name: "goodCategory",
+                meta: {
+                    title: "商品分类",
+                    icon: "carbon:categories",
                     roles: ["sys:goodsCategory"],
                     parentId: 34,
                 },
