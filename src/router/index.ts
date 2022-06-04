@@ -14,10 +14,10 @@ export const menuRoutes: Array<RouteRecordRaw> = [
     {
         path: "/company",
         component: Layout,
-        name: "goods",
+        name: "company",
         meta: {
-            title: "商品管理",
-            icon: "carbon:product",
+            title: "公司管理",
+            icon: "carbon:id-management",
             roles: ["sys:goods"],
             parentId: 0,
         },
@@ -25,19 +25,30 @@ export const menuRoutes: Array<RouteRecordRaw> = [
             {
                 path: "/staff",
                 component: () => import("@/views/company/staff.vue"),
-                name: "goodCategory",
+                name: "staff",
                 meta: {
-                    title: "商品分类",
-                    icon: "carbon:categories",
+                    title: "员工管理",
+                    icon: "ic:baseline-manage-accounts",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+            {
+                path: "/deal",
+                component: () => import("@/views/company/deal.vue"),
+                name: "deal",
+                meta: {
+                    title: "财务管理",
+                    icon: "carbon:order-details",
                     roles: ["sys:goodsCategory"],
                     parentId: 34,
                 },
             },
         ],
     }, {
-        path: "/book",
+        path: "/product",
         component: Layout,
-        name: "books",
+        name: "product",
         meta: {
             title: t("book"),
             icon: "carbon:product",
@@ -46,12 +57,23 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         },
         children: [
             {
-                path: "/staff",
-                component: () => import("@/views/company/staff.vue"),
-                name: "goodCategory",
+                path: "/book",
+                component: () => import("@/views/product/book/BookList.vue"),
+                name: "book",
                 meta: {
-                    title: "商品分类",
-                    icon: "carbon:categories",
+                    title: "书本管理",
+                    icon: "akar-icons:book",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+            {
+                path: "/brand",
+                component: () => import("@/views/product/brand/BrandList.vue"),
+                name: "brand",
+                meta: {
+                    title: "出版社管理",
+                    icon: "carbon:word-cloud",
                     roles: ["sys:goodsCategory"],
                     parentId: 34,
                 },
