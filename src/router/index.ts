@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router';
 import Layout from "@/layout/index.vue"
-const { t } = useI18n()
+// const { t } = useI18n()
 export const menuRoutes: Array<RouteRecordRaw> = [
     {
         path: '/dashboard',
@@ -45,32 +45,33 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 },
             },
         ],
-    }, {
+    },
+    {
         path: "/product",
         component: Layout,
         name: "product",
         meta: {
-            title: t("book"),
+            title: "商品管理",
             icon: "carbon:product",
             roles: ["sys:goods"],
             parentId: 0,
         },
         children: [
+            // {
+            //     path: "/book",
+            //     component: () => import("@/views/product/book/BookList.vue"),
+            //     name: "book",
+            //     meta: {
+            //         title: "书本管理",
+            //         icon: "akar-icons:book",
+            //         roles: ["sys:goodsCategory"],
+            //         parentId: 34,
+            //     },
+            // },
             {
-                path: "/book",
-                component: () => import("@/views/product/book/BookList.vue"),
-                name: "book",
-                meta: {
-                    title: "书本管理",
-                    icon: "akar-icons:book",
-                    roles: ["sys:goodsCategory"],
-                    parentId: 34,
-                },
-            },
-            {
-                path: "/brand",
-                component: () => import("@/views/product/brand/BrandList.vue"),
-                name: "brand",
+                path: "/press",
+                component: () => import("@/views/product/press/PressList.vue"),
+                name: "press",
                 meta: {
                     title: "出版社管理",
                     icon: "carbon:word-cloud",

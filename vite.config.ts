@@ -18,7 +18,7 @@ export default defineConfig({
       // ui库解析器
       resolvers: [ElementPlusResolver()],
       // 指定组件位置，默认是src/components
-      dirs: ['src/components'],
+      dirs: ['src/components', 'src/views', 'src/layout'],
       extensions: ['vue'],
       // 配置文件生成位置
       dts: 'src/components.d.ts'
@@ -45,23 +45,13 @@ export default defineConfig({
     }
   },
   server: {
-    open: true
-  },
-  build: {
-    lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
-      name: '[[name]]',
-      fileName: (format) => `peintre.${format}.js`
-    },
-    rollupOptions: {
-      // 确保外部化处理那些你不想打包进库的依赖
-      external: ['vue'],
-      output: {
-        // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
-        globals: {
-          vue: 'Vue'
-        }
-      }
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'https://mock.apifox.cn/m1/1084382-0-default',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      },
     }
-  }
+  },
 })

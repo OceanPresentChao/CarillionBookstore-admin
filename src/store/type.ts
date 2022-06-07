@@ -1,7 +1,8 @@
 export const enum Types {
     USER = 'userStore',
     TABS = 'tabsStore',
-    MENU = 'menuStore'
+    MENU = 'menuStore',
+    AUTH = 'authStore',
 }
 
 export interface Tab {

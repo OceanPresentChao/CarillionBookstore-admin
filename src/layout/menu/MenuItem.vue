@@ -3,13 +3,13 @@
         <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.path" :key="menu.path">
             <template #title>
                 <Icon class="icons" v-if="menu.meta.icon" :icon="menu.meta.icon" />
-                <span v-once>{{ menu.meta.title }}</span>
+                <span>{{ menu.meta.title }}</span>
             </template>
             <menu-item :menuList="menu.children"></menu-item>
         </el-sub-menu>
         <el-menu-item style="color: #f4f4f5" v-else :index="menu.path">
             <Icon class="icons" v-if="menu.meta.icon" :icon="menu.meta.icon" />
-            <template #title v-once>{{ menu.meta.title }}</template>
+            <template #title>{{ menu.meta.title }}</template>
         </el-menu-item>
     </template>
 </template>

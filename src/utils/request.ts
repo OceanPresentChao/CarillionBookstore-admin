@@ -1,26 +1,23 @@
+import { useAuthStore } from '@/store/auth'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 // import store from '../store'
-import { getToken } from '@/utils/auth'
-
+const authStore = useAuthStore()
 // 创建axios实例
 const service = axios.create({
-    baseURL: process.env.BASE_API, // api的base_url
+    baseURL: '', // api的base_url
     timeout: 15000 // 请求超时时间
 })
 
 // request拦截器
 service.interceptors.request.use(config => {
-    if (store.getters.token) {
-        const token = getToken()
-        if (token) {
-            config.headers!['Authorization'] = token // 让每个请求携带自定义token 请根据实际情况自行修改
-        }
+    const token = authStore.getToken()
+    if (token) {
+        config.headers!['Authorization'] = token // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     return config
 }, error => {
     // Do something with request error
-    console.log(error) // for debug
     Promise.reject(error)
 })
 
@@ -31,7 +28,7 @@ service.interceptors.response.use(
         * code为非200是抛错 可结合自己业务进行修改
         */
         const res = response.data
-        if (res.code !== 200) {
+        if (res.code < 200 || res.code >= 300) {
             ElMessage({
                 message: res.message,
                 type: 'error',
@@ -45,14 +42,14 @@ service.interceptors.response.use(
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    store.dispatch('FedLogOut').then(() => {
-                        location.reload()// 为了重新实例化vue-router对象 避免bug
-                    })
+                    // store.dispatch('FedLogOut').then(() => {
+                    //     location.reload()// 为了重新实例化vue-router对象 避免bug
+                    // })
                 })
             }
             return Promise.reject('error')
         } else {
-            return response.data
+            return response
         }
     },
     error => {

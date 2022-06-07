@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import type { RouteRecordRaw } from 'vue-router'
 import { Types } from './type'
-import Layout from '@/components/layout/index.vue'
+import Layout from '@/layout/index.vue'
 import { menuRoutes } from '@/router';
 
 const modules = import.meta.glob('../views/**/*.vue')
