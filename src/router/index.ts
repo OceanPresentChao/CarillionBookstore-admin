@@ -57,17 +57,17 @@ export const menuRoutes: Array<RouteRecordRaw> = [
             parentId: 0,
         },
         children: [
-            // {
-            //     path: "/book",
-            //     component: () => import("@/views/product/book/BookList.vue"),
-            //     name: "book",
-            //     meta: {
-            //         title: "书本管理",
-            //         icon: "akar-icons:book",
-            //         roles: ["sys:goodsCategory"],
-            //         parentId: 34,
-            //     },
-            // },
+            {
+                path: "/book",
+                component: () => import("@/views/product/book/BookList.vue"),
+                name: "book",
+                meta: {
+                    title: "书本管理",
+                    icon: "akar-icons:book",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
             {
                 path: "/press",
                 component: () => import("@/views/product/press/PressList.vue"),

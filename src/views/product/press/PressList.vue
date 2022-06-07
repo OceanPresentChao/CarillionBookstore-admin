@@ -52,7 +52,7 @@
                     </el-table-column>
                     <el-table-column label="操作" width="200" align="center">
                         <template #default="scope">
-                            <el-button size="default" @click="">编辑
+                            <el-button size="default" @click="handleUpdate(scope.$index, scope.row)">编辑
                             </el-button>
                             <el-popconfirm title="Are you sure to delete this?"
                                 @confirm="handleDelete(scope.$index, scope.row)">
@@ -82,13 +82,24 @@
                 :current-page.sync="listQuery.page" :total="list.total">
             </el-pagination>
         </div>
+        <el-dialog :title="dialogProps.title" v-model="dialogProps.visible" :before-close="dialogProps.handleClose"
+            width="30%" append-to-body>
+            <el-form ref="pressFormRef" :model="dialogProps.pressProps" :rules="dialogProps.rules" label-width="120px">
+                <el-form-item label="出版社名称" prop="name">
+                    <el-input v-model="dialogProps.pressProps.name" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogProps.visible = false">取 消</el-button>
+                <el-button type="primary" @click="">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script lang="ts" setup >
 import { ElMessage } from 'element-plus';
 import { requestGetPressList } from '@/api/product';
-
-const router = useRouter()
+const { t } = useI18n()
 const operates: Operate[] = [
     {
         label: "显示品牌",
@@ -113,7 +124,70 @@ const list = ref({
     pageSize: 0,
 })
 let multipleSelection: any[] = []
-
+const pressFormRef = ref()
+const dialogProps = ref({
+    title: '',
+    visible: false,
+    rules: {
+        name: [
+            { required: true, message: '请输入类型名称', trigger: 'blur' }
+        ]
+    },
+    pressProps: {
+        name: '',
+        id: -1
+    },
+    handleClose(done: () => void) {
+        if (!dialogProps.value.visible && pressFormRef.value) {
+            pressFormRef.value.clearValidate()
+        }
+        done()
+    },
+    handleConfirm() {
+        pressFormRef.value.validate((valid: boolean) => {
+            if (valid) {
+                let data = new URLSearchParams();
+                data.append("name", dialogProps.value.pressProps.name);
+                if (dialogProps.value.title === "添加类型") {
+                    // createProductAttrCate(data).then(response => {
+                    //     ElMessage({
+                    //         message: '添加成功',
+                    //         type: 'success',
+                    //         duration: 1000
+                    //     });
+                    //     dialogProps.value.visible = false;
+                    //     getList();
+                    // });
+                    ElMessage({
+                        message: '添加成功',
+                        type: 'success',
+                        duration: 1000
+                    });
+                    dialogProps.value.visible = false;
+                } else {
+                    // updateProductAttrCate(dialogProps.value.pressProps.id, data).then(response => {
+                    //     ElMessage({
+                    //         message: '修改成功',
+                    //         type: 'success',
+                    //         duration: 1000
+                    //     });
+                    //     dialogProps.value.visible = false;
+                    //     getList();
+                    // });
+                    ElMessage({
+                        message: '修改成功',
+                        type: 'success',
+                        duration: 1000
+                    });
+                    dialogProps.value.visible = false;
+                }
+            } else {
+                console.log('error submit!!');
+                return false;
+            }
+        });
+    }
+})
 getList()
 
 
@@ -137,6 +211,13 @@ async function getList() {
 }
 function handleSelectionChange(val: any[]) {
     multipleSelection = val;
+}
+
+function handleUpdate(index: number, row: any) {
+    dialogProps.value.visible = true;
+    dialogProps.value.title = "编辑类型";
+    dialogProps.value.pressProps.name = row.name;
+    dialogProps.value.pressProps.id = row.id;
 }
 
 function handleDelete(index: number, row: any) {

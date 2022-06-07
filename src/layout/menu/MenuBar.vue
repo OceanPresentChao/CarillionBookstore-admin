@@ -1,8 +1,8 @@
 <template>
-    <div>
-        <el-scrollbar wrap-class="scrollbar-wrapper">
-            <el-menu :default-active="activeIndex" class="menu" :collapse="isCollapse" @open="handleOpen"
-                @close="handleClose" background-color="#304156" text-color="#303133" unique-opened router>
+    <div class="fixed">
+        <el-scrollbar>
+            <el-menu :default-active="activeIndex" class="menu" :collapse="isCollapse" background-color="#304156"
+                text-color="#303133" unique-opened router>
                 <el-menu-item index="/dashboard">
                     Logo
                 </el-menu-item>
@@ -20,14 +20,15 @@ import { useMenuStore } from '@/store/menu'
 //控制菜单展开和关闭
 const menuStore = useMenuStore()
 const isCollapse = computed(() => {
+
     return menuStore.collapse
 })
-const handleOpen = (index: string | number, indexPath: string[]) => {
-    console.log(index, indexPath)
-}
-const handleClose = (index: string | number, indexPath: string[]) => {
-    console.log(index, indexPath)
-}
+// const handleOpen = (index: string | number, indexPath: string[]) => {
+//     console.log(index, indexPath)
+// }
+// const handleClose = (index: string | number, indexPath: string[]) => {
+//     console.log(index, indexPath)
+// }
 const route = useRoute()
 const activeIndex = computed(() => {
     const { path } = route
@@ -45,8 +46,11 @@ const menuList = computed(() => {
     
 <style  scoped>
 .menu:not(.el-menu--collapse) {
-    width: 13vw;
+    width: var(--menu-not-collapse-width)
+}
 
+.menu.el-menu--collapse {
+    width: var(--menu-collapse-width)
 }
 
 .menu {

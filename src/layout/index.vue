@@ -1,7 +1,8 @@
 <template>
-    <el-container class="layout">
+    <el-container class="layout" :class="{ collapseContainer: isCollapse }">
+        <!-- Aside content -->
         <MenuBar></MenuBar>
-        <el-container>
+        <el-container class="wrapper">
             <el-header class="header">
                 <Header></Header>
             </el-header>
@@ -18,14 +19,20 @@
 </template>
     
 <script setup lang='ts'>
+import { useMenuStore } from '@/store/menu';
+
 // console.log(import.meta.env.VITE_APP_API);
+const menuStore = useMenuStore()
+const isCollapse = computed(() => {
+    return menuStore.collapse
+})
 </script>
     
 <style scoped>
 .layout {
     position: relative;
-    height: 100%;
-    width: 100%;
+    /* height: 100%;
+    width: 100%; */
 }
 
 .layout .aside {
@@ -42,5 +49,14 @@
 
 .layout .main {
     padding-top: 0px;
+}
+
+.collapseContainer .wrapper {
+    margin-left: var(--menu-collapse-width);
+}
+
+.wrapper {
+    margin-left: var(--menu-not-collapse-width);
+    transition: all .5s;
 }
 </style>

@@ -2,10 +2,14 @@
     "book": "图书管理",
     "booklist": "图书列表",
     "bookcate": "图书分类",
-    "bookbrand": {
-        "brand": "出版社管理",
+    "bookpress": {
+        "press": "出版社管理",
         "searchhover": "出版社名称/关键字",
         "name": "出版社名称",
         "firstLetter": "首字母"
-    }
+    },
+    "add": "添加",
+    "del": "删除",
+    "edit": "编辑",
+    "dataList": "数据列表"
 }
