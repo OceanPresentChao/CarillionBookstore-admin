@@ -14,25 +14,23 @@
             <div style="margin-top: 15px">
                 <el-form :inline="true" :model="listQuery" size="default" label-width="140px">
                     <el-form-item label="输入搜索：">
-                        <el-input style="width: 203px" v-model="listQuery.keyword" placeholder="商品名称">
+                        <el-input style="width: 203px" v-model="listQuery.s_name" placeholder="商品名称">
                         </el-input>
                     </el-form-item>
                     <el-form-item label="图书分类：">
-                        <el-cascader clearable v-model="listQuery.selectCateValue" :options="categoryOptions"
-                            :props="{ multiple: true, expandTrigger: ExpandTrigger.HOVER }">
-                        </el-cascader>
-                    </el-form-item>
-                    <el-form-item label="图书出版社：">
-                        <el-select v-model="listQuery.pressId" placeholder="请选择品牌" clearable>
-                            <el-option v-for="item in pressOptions" :key="item.value" :label="item.label"
-                                :value="item.value">
-                            </el-option>
+                        <el-select v-model="listQuery.s_categoryIds" multiple placeholder="Select" style="width: 240px">
+                            <el-option v-for="item in categoryOptions" :key="item.id" :label="item.name"
+                                :value="item.id" />
                         </el-select>
                     </el-form-item>
+                    <el-form-item label="图书出版社：">
+                        <el-input style="width: 203px" v-model="listQuery.s_pressName" placeholder="出版社名称">
+                        </el-input>
+                    </el-form-item>
                     <el-form-item label="上架状态：">
-                        <el-select v-model="listQuery.publishStatus" placeholder="全部" clearable>
+                        <el-select v-model="listQuery.s_status" placeholder="全部" clearable>
                             <el-option v-for="item in publishStatusOptions" :key="item.value" :label="item.label"
-                                :value="item.value">
+                                :value="item.id">
                             </el-option>
                         </el-select>
                     </el-form-item>
@@ -52,24 +50,24 @@
                     @selection-change="handleSelectionChange" v-loading="list.listLoading" border>
                     <el-table-column type="selection" width="60" align="center" />
                     <el-table-column property="id" label="编号" width="100" align="center" />
-                    <el-table-column label="商品图片" width="120" align="center">
+                    <el-table-column label="商品图片" align="center">
                         <template #default="scope">
-                            <img style="height: 80px" :src="scope.row.pic">
+                            <img style="height: 100px;width:auto;
+                            display: inline-block;align-self: center;" :src="scope.row.pic">
                         </template>
                     </el-table-column>
-                    <el-table-column property="name" label="图书名称" align="center" />
-
-                    <el-table-column property="press" label="出版社" width="100" align="center" />
-                    <el-table-column property="price" label="价格" width="100" align="center" />
-                    <el-table-column label="上架" width="100" align="center">
+                    <el-table-column property="name" label="图书名称" align="center" width="180" />
+                    <el-table-column property="pressName" label="出版社" width="160" align="center" />
+                    <el-table-column property="price" label="价格" width="110" align="center" />
+                    <el-table-column label="上架" width="120" align="center">
                         <template #default="scope">
                             <el-switch @change="handleShowStatusChange(scope.$index, scope.row)" :active-value="1"
-                                :inactive-value="0" v-model="scope.row.show">
+                                :inactive-value="0" v-model="scope.row.isShow">
                             </el-switch>
                         </template>
                     </el-table-column>
-                    <el-table-column property="dealmount" label="销量" width="100" align="center" />
-                    <el-table-column label="操作" width="160" align="center">
+                    <el-table-column property="dealmount" label="销量" width="110" align="center" />
+                    <el-table-column label="操作" width="180" align="center">
                         <template #default="scope">
                             <el-button size="default" @click="handleUpdate(scope.$index, scope.row)">编辑
                             </el-button>
@@ -101,57 +99,45 @@
                 :current-page.sync="listQuery.page" :total="list.total">
             </el-pagination>
         </div>
-        <el-dialog :title="dialogProps.title" v-model="dialogProps.visible" :before-close="dialogProps.handleClose"
-            width="30%" append-to-body>
-            <el-form ref="pressFormRef" :model="dialogProps.pressProps" :rules="dialogProps.rules" label-width="120px">
-                <el-form-item label="出版社名称" prop="name">
-                    <el-input v-model="dialogProps.pressProps.name" auto-complete="off"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogProps.visible = false">取 消</el-button>
-                <el-button type="primary" @click="">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 <script lang="ts" setup >
 import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestGetPressList } from '@/api/product';
+import { requestGetBookCategories, requestGetBookList } from '@/api/product';
 const { t } = useI18n()
 const operates: Operate[] = [
     {
-        label: "显示品牌",
-        value: "showBrand"
+        label: "上架图书",
+        value: "showBook"
     },
     {
-        label: "隐藏品牌",
-        value: "hideBrand"
+        label: "下架图书",
+        value: "hideBook"
+    },
+    {
+        label: "删除图书",
+        value: "delBook"
     }
 ]
-const operateType = ref("showBrand")
+const operateType = ref("showBook")
 const defaultListQuery = {
-    keyword: "",
+    s_name: "",
     limit: 5,
     page: 1,
-    selectCateValue: [],
-    pressId: 0,
-    publishStatus: 0,
-    verifyStatus: 0
+    s_categoryIds: [] as any[],
+    s_pressName: '',
+    s_status: 0,
 };
 const listQuery = ref({
-    keyword: "",
+    s_name: "",
     limit: 5,
     page: 1,
-    selectCateValue: [],
-    pressId: 0,
-    publishStatus: 0,
-    verifyStatus: 0
+    s_categoryIds: [] as any[],
+    s_pressName: '',
+    s_status: 0,
 })
-const categoryOptions: any[] = []
-const pressOptions: any[] = []
-const publishStatusOptions: any[] = []
-const verifyStatusOptions: any[] = []
+const categoryOptions = ref<any[]>([])
+const publishStatusOptions = ref<any[]>([])
 const list = ref({
     listLoading: false,
     data: [],
@@ -160,78 +146,14 @@ const list = ref({
     pageSize: 0,
 })
 let multipleSelection: any[] = []
-const pressFormRef = ref()
-const dialogProps = ref({
-    title: '',
-    visible: false,
-    rules: {
-        name: [
-            { required: true, message: '请输入类型名称', trigger: 'blur' }
-        ]
-    },
-    pressProps: {
-        name: '',
-        id: -1
-    },
-    handleClose(done: () => void) {
-        if (!dialogProps.value.visible && pressFormRef.value) {
-            pressFormRef.value.clearValidate()
-        }
-        done()
-    },
-    handleConfirm() {
-        pressFormRef.value.validate((valid: boolean) => {
-            if (valid) {
-                let data = new URLSearchParams();
-                data.append("name", dialogProps.value.pressProps.name);
-                if (dialogProps.value.title === "添加类型") {
-                    // createProductAttrCate(data).then(response => {
-                    //     ElMessage({
-                    //         message: '添加成功',
-                    //         type: 'success',
-                    //         duration: 1000
-                    //     });
-                    //     dialogProps.value.visible = false;
-                    //     getList();
-                    // });
-                    ElMessage({
-                        message: '添加成功',
-                        type: 'success',
-                        duration: 1000
-                    });
-                    dialogProps.value.visible = false;
-                } else {
-                    // updateProductAttrCate(dialogProps.value.pressProps.id, data).then(response => {
-                    //     ElMessage({
-                    //         message: '修改成功',
-                    //         type: 'success',
-                    //         duration: 1000
-                    //     });
-                    //     dialogProps.value.visible = false;
-                    //     getList();
-                    // });
-                    ElMessage({
-                        message: '修改成功',
-                        type: 'success',
-                        duration: 1000
-                    });
-                    dialogProps.value.visible = false;
-                }
-            } else {
-                console.log('error submit!!');
-                return false;
-            }
-        });
-    }
-})
-getList()
+const router = useRouter()
+const route = useRoute()
 
-
-async function getList() {
+async function getBookList() {
     try {
         list.value.listLoading = true;
-        const { data } = await requestGetPressList(listQuery.value)
-        console.log(data);
+        const { data } = await requestGetBookList(listQuery.value)
+        console.log("booklist", data);
         list.value.listLoading = false
         list.value.data = data.record
         list.value.total = data.total
@@ -243,22 +165,32 @@ async function getList() {
             message: String(error)
         })
     }
-
 }
+
+async function getCategories() {
+    try {
+        const { data } = await requestGetBookCategories()
+        categoryOptions.value = data.record
+        console.log("category", data);
+    } catch (error) {
+        ElMessage({
+            type: "error",
+            message: String(error)
+        })
+    }
+}
+
 function handleSelectionChange(val: any[]) {
     multipleSelection = val;
 }
 
 function handleResetSearch() {
-    listQuery.value.selectCateValue = [];
+    listQuery.value.s_categoryIds = []
     listQuery.value = defaultListQuery
 }
 
 function handleUpdate(index: number, row: any) {
-    dialogProps.value.visible = true;
-    dialogProps.value.title = "编辑类型";
-    dialogProps.value.pressProps.name = row.name;
-    dialogProps.value.pressProps.id = row.id;
+    router.push({ path: "/product/updateBook", query: { id: row.id } })
 }
 
 function handleDelete(index: number, row: any) {
@@ -304,15 +236,15 @@ function handleShowStatusChange(index: number, row: any) {
 function handleSizeChange(val: number) {
     listQuery.value.page = 1;
     listQuery.value.limit = val;
-    getList();
+    getBookList();
 }
 function handleCurrentChange(val: number) {
     listQuery.value.page = val;
-    getList();
+    getBookList();
 }
 function searchBrandList() {
     listQuery.value.page = 1;
-    getList();
+    getBookList();
 }
 function handleBatchOperate() {
     console.log(multipleSelection);
@@ -353,6 +285,13 @@ function handleBatchOperate() {
     //     });
     // });
 }
+
+if (route.query.s_pressName) {
+    listQuery.value.s_pressName = String(route.query.s_pressName)
+}
+getBookList()
+getCategories()
+
 
 </script>
 <style scoped>

@@ -5,6 +5,10 @@
     margin: 0 auto;
 }
 
+.el-form {
+    --el-form-label-font-size: 1rem !important;
+}
+
 :root {
     --menu-not-collapse-width: 13vw;
     --menu-collapse-width: 5vw

@@ -7,6 +7,7 @@ import App from './App.vue'
 import './index.css'
 import './style/transition.css'
 import './style/manage.css'
+import './style/index.css'
 import './style/element.css'
 const app = createApp(App)
 app.component("Icon", Icon)

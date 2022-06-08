@@ -58,18 +58,45 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         },
         children: [
             {
-                path: "/book",
+                path: "/product/book",
                 component: () => import("@/views/product/book/BookList.vue"),
                 name: "book",
                 meta: {
-                    title: "书本管理",
+                    title: "图书列表",
                     icon: "akar-icons:book",
                     roles: ["sys:goodsCategory"],
                     parentId: 34,
+                }
+            },
+            {
+                path: "/product/updateBook",
+                component: () => import("@/views/product/book/BookDetail.vue"),
+                name: "updateBook",
+                props: {
+                    isEdit: true
+                },
+                meta: {
+                    title: "更新图书",
+                    icon: "carbon:word-cloud",
+                    roles: ["sys:goodsCategory"],
+                    hidden: true
                 },
             },
             {
-                path: "/press",
+                path: "/product/createBook",
+                component: () => import("@/views/product/book/BookDetail.vue"),
+                name: "createBook",
+                props: {
+                    isEdit: false
+                },
+                meta: {
+                    title: "添加图书",
+                    icon: "carbon:word-cloud",
+                    roles: ["sys:goodsCategory"],
+                },
+            },
+            {
+                path: "/product/press",
                 component: () => import("@/views/product/press/PressList.vue"),
                 name: "press",
                 meta: {
@@ -95,6 +122,7 @@ const constantRoutes: Array<RouteRecordRaw> = [
         component: () => import("@/views/error/404.vue"),
     }
 ]
+
 
 export const router = createRouter({
     routes: [...menuRoutes, ...constantRoutes],
