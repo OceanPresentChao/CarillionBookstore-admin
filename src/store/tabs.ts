@@ -6,33 +6,32 @@ export const useTabsStore = defineStore({
     state: () => {
         let data: Tab[] = []
         return {
-            count: 0,
             collapse: false,
             tabsList: data,
         }
     },
     getters: {
-        getCount(): number {
-            return this.count;
-        },
         //获取collapse
         getCollapse(): boolean {
             return this.collapse;
         },
         getTabsList(): any[] {
             return this.tabsList
+        },
+        getAmount(): number {
+            return this.tabsList.length
         }
     },
     actions: {
-        setCount(count: number) {
-            this.$state.count = count
-        },
         setCollapse(collapse: boolean) {
             this.$state.collapse = collapse
         },
         addTab(tab: Tab) {
             if (this.$state.tabsList.some(item => item.path === tab.path)) return;
             this.$state.tabsList.push(tab)
+        },
+        clearTabs() {
+            this.tabsList.splice(1, this.tabsList.length - 1)
         }
     }
 

@@ -1,5 +1,8 @@
+import { useAuthStore } from '@/store/auth';
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router';
 import Layout from "@/layout/index.vue"
+import Login from "@/views/login/Login.vue"
+import NProgress from "nprogress";
 // const { t } = useI18n()
 export const menuRoutes: Array<RouteRecordRaw> = [
     {
@@ -117,14 +120,46 @@ const constantRoutes: Array<RouteRecordRaw> = [
         redirect: '/dashboard'
     },
     {
+        path: '/login',
+        name: 'login',
+        component: Login,
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
         component: () => import("@/views/error/404.vue"),
     }
 ]
 
-
 export const router = createRouter({
     routes: [...menuRoutes, ...constantRoutes],
     history: createWebHashHistory()
+})
+const whiteList = ["/login"];
+
+router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore()
+    NProgress.start()
+    if (authStore.getToken()) { // 判断是否有token
+        if (to.path === '/login') {
+            next({ path: '/' });
+        } else {
+            if (authStore.roles.length === 0) { // 判断当前用户是否已拉取完
+                authStore.getAdminInfo()
+                next({ ...to, replace: true })
+            } else {
+                next() //当有用户权限的时候，说明所有可访问路由已生成 如访问没权限的全面会自动进入404页面
+            }
+        }
+    } else {
+        if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
+            next();
+        } else {
+            next('/login'); // 否则全部重定向到登录页
+        }
+    }
+})
+
+router.afterEach(() => {
+    NProgress.done();
 })
