@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^8.2.3",
+    "echarts": "^5.3.2",
     "vue": "^3.2.31",
     "vue-i18n": "^9.1.10"
   },

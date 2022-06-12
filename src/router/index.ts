@@ -2,17 +2,25 @@ import { useAuthStore } from '@/store/auth';
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router';
 import Layout from "@/layout/index.vue"
 import Login from "@/views/login/Login.vue"
+import Home from "@/views/home/Home.vue"
 import NProgress from "nprogress";
 // const { t } = useI18n()
 export const menuRoutes: Array<RouteRecordRaw> = [
     {
-        path: '/dashboard',
+        path: '/',
         component: Layout,
+        redirect: '/dashboard',
         meta: {
             title: "首页",
             icon: "carbon:home",
             roles: ["sys:manage"]
-        }
+        },
+        children: [
+            {
+                path: '/dashboard',
+                component: Home,
+            },
+        ]
     },
     {
         path: "/company",
@@ -114,11 +122,7 @@ export const menuRoutes: Array<RouteRecordRaw> = [
 ]
 
 const constantRoutes: Array<RouteRecordRaw> = [
-    {
-        path: '/',
-        component: Layout,
-        redirect: '/dashboard'
-    },
+
     {
         path: '/login',
         name: 'login',
@@ -144,7 +148,7 @@ router.beforeEach((to, from, next) => {
         if (to.path === '/login') {
             next({ path: '/' });
         } else {
-            if (authStore.roles.length === 0) { // 判断当前用户是否已拉取完
+            if (authStore.userInfo.roles.length === 0) { // 判断当前用户是否已拉取完
                 authStore.getAdminInfo()
                 next({ ...to, replace: true })
             } else {

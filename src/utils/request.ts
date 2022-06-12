@@ -2,7 +2,7 @@ import { useAuthStore } from '@/store/auth'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 // import store from '../store'
-const authStore = useAuthStore()
+
 // 创建axios实例
 const service = axios.create({
     baseURL: '', // api的base_url
@@ -11,6 +11,7 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
+    const authStore = useAuthStore()
     const token = authStore.getToken()
     if (token) {
         config.headers!['Authorization'] = token // 让每个请求携带自定义token 请根据实际情况自行修改

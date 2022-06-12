@@ -68,7 +68,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
                     <el-form-item>
                         <div class="w-full h-20px flex justify-between items-center">
                             <el-checkbox v-model="checked">记住密码</el-checkbox>
-                            <el-button type="text" @click="authStore.setCurrentPage(1)">
+                            <el-button text @click="authStore.setCurrentPage(1)">
                                 忘记密码?
                             </el-button>
                         </div>

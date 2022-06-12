@@ -2,7 +2,18 @@ import Cookies from 'js-cookie'
 import { defineStore } from 'pinia'
 import { useTabsStore } from './tabs';
 import { Types } from './type'
-const router = useRouter()
+
+interface UserInfo {
+    name: string
+    roles: string[]
+    [propName: string]: any
+}
+
+const emptyInfo: UserInfo = {
+    name: '',
+    roles: []
+}
+
 export const useAuthStore = defineStore({
     id: Types.AUTH,
     state: () => {
@@ -10,8 +21,7 @@ export const useAuthStore = defineStore({
         return {
             TokenKey: 'Login',
             currentPage: 0,
-            name: '',
-            roles: [] as string[]
+            userInfo: emptyInfo
         }
     },
     getters: {
@@ -30,7 +40,7 @@ export const useAuthStore = defineStore({
             useSessionStorage(this.TokenKey, undefined)
         },
         getAdminInfo() {
-            this.roles = ['admin']
+            this.userInfo.roles = ['admin']
             return {
                 role: ['admin']
             }
@@ -38,19 +48,17 @@ export const useAuthStore = defineStore({
         setCurrentPage(page: 0 | 1) {
             this.currentPage = page
         },
-        setName(name: string) {
-            this.name = name
-        },
         loginByAdminName(adminForm: Object) {
             console.log("@@@", adminForm);
             this.setToken("eyJhbGciOiJIUzUxMiJ9.test")
         },
         logOut() {
+            const router = useRouter()
             const tabsStore = useTabsStore()
-            this.name = "";
+            this.userInfo = emptyInfo
             this.removeToken()
             tabsStore.clearTabs()
-            router.push("/login")
+
         },
     }
 })

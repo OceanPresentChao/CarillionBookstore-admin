@@ -54,6 +54,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
+      '/slogan': {
+        target: 'http://v1.hitokoto.cn',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/slogan/, '')
+      }
     }
   },
 })
