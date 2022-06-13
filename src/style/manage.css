@@ -147,3 +147,11 @@ a:hover {
 .color-info {
     color: #909399;
 }
+
+.titleIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: rgb(24, 114, 204);
+    display: inline-block;
+    margin: 0 0.25rem;
+}

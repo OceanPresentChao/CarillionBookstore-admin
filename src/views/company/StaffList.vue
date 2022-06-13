@@ -4,7 +4,7 @@
             <div>
                 <Icon icon="carbon:search" class="titleIcon"></Icon>
                 <span>筛选搜索</span>
-                <el-button style="float: right" @click="searchBrandList" type="primary" size="default">
+                <el-button style="float: right" @click="searchDepartments" type="primary" size="default">
                     查询结果
                 </el-button>
                 <el-button style="float: right;margin-right: 15px" @click="handleResetSearch()" size="default">
@@ -14,24 +14,18 @@
             <div style="margin-top: 15px">
                 <el-form :inline="true" :model="listQuery" size="default" label-width="140px">
                     <el-form-item label="输入搜索：">
-                        <el-input style="width: 203px" v-model="listQuery.s_name" placeholder="商品名称">
+                        <el-input style="width: 203px" v-model="listQuery.s_name" placeholder="员工名称">
                         </el-input>
                     </el-form-item>
-                    <el-form-item label="图书分类：">
-                        <el-select v-model="listQuery.s_categoryIds" multiple placeholder="Select" style="width: 240px">
-                            <el-option v-for="item in categoryOptions" :key="item.id" :label="item.name"
+                    <el-form-item label="员工部门：">
+                        <el-select v-model="listQuery.s_departId" placeholder="Select" style="width: 240px">
+                            <el-option v-for="item in departOptions" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="图书出版社：">
-                        <el-input style="width: 203px" v-model="listQuery.s_pressName" placeholder="出版社名称">
-                        </el-input>
-                    </el-form-item>
-                    <el-form-item label="上架状态：">
-                        <el-select v-model="listQuery.s_status" placeholder="全部" clearable>
-                            <el-option v-for="item in publishStatusOptions" :key="item.value" :label="item.label"
-                                :value="item.id">
-                            </el-option>
+                    <el-form-item label="员工职位：">
+                        <el-select v-model="listQuery.s_roleId" placeholder="Select" style="width: 240px">
+                            <el-option v-for="item in roleOptions" :key="item.id" :label="item.name" :value="item.id" />
                         </el-select>
                     </el-form-item>
                 </el-form>
@@ -49,24 +43,14 @@
                 <el-table ref="brandTable" :data="list.data" style="width: 100%"
                     @selection-change="handleSelectionChange" v-loading="list.listLoading" border>
                     <el-table-column type="selection" width="60" align="center" />
-                    <el-table-column property="id" label="编号" width="100" align="center" />
-                    <el-table-column label="商品图片" align="center">
-                        <template #default="scope">
-                            <img style="height: 100px;width:auto;
-                            display: inline-block;align-self: center;" :src="scope.row.pic">
-                        </template>
-                    </el-table-column>
-                    <el-table-column property="name" label="图书名称" align="center" width="180" />
-                    <el-table-column property="pressName" label="出版社" width="160" align="center" />
-                    <el-table-column property="price" label="价格" width="110" align="center" />
-                    <el-table-column label="上架" width="120" align="center">
-                        <template #default="scope">
-                            <el-switch @change="handleShowStatusChange(scope.$index, scope.row)" :active-value="1"
-                                :inactive-value="0" v-model="scope.row.isShow">
-                            </el-switch>
-                        </template>
-                    </el-table-column>
-                    <el-table-column property="dealmount" label="销量" width="110" align="center" />
+                    <el-table-column property="id" label="编号" width="110" align="center" />
+                    <el-table-column property="name" label="名称" align="center" />
+                    <el-table-column property="age" label="年龄" width="120" align="center" />
+                    <el-table-column property="depart" label="部门" width="170" align="center" />
+                    <el-table-column property="role" label="职位" width="170" align="center" />
+
+                    <el-table-column property="salary" label="薪水" width="120" align="center" />
+                    <el-table-column property="telphone" label="电话" width="170" align="center" />
                     <el-table-column label="操作" width="180" align="center">
                         <template #default="scope">
                             <el-button size="default" @click="handleUpdate(scope.$index, scope.row)">编辑
@@ -103,41 +87,26 @@
 </template>
 <script lang="ts" setup >
 import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestGetBookCategories, requestGetBookList } from '@/api/product';
+import { requestGetStaffList, requestGetDepartList, requestGetRoleList } from '@/api/company';
 const { t } = useI18n()
 const operates: Operate[] = [
     {
-        label: "上架图书",
-        value: "showBook"
-    },
-    {
-        label: "下架图书",
-        value: "hideBook"
-    },
-    {
-        label: "删除图书",
-        value: "delBook"
+        label: "删除员工",
+        value: "delStaff"
     }
 ]
-const operateType = ref("showBook")
+const operateType = ref("delStaff")
 const defaultListQuery = {
-    s_name: "",
     limit: 5,
     page: 1,
-    s_categoryIds: [] as any[],
-    s_pressName: '',
-    s_status: 0,
+    s_name: "",
+    s_roleId: 0,
+    s_departId: 0,
+    s_age: 0,
 };
-const listQuery = ref({
-    s_name: "",
-    limit: 5,
-    page: 1,
-    s_categoryIds: [] as any[],
-    s_pressName: '',
-    s_status: 0,
-})
-const categoryOptions = ref<any[]>([])
-const publishStatusOptions = ref<any[]>([])
+const listQuery = ref(JSON.parse(JSON.stringify(defaultListQuery)))
+const departOptions = ref<any[]>([])
+const roleOptions = ref<any[]>([])
 const list = ref({
     listLoading: false,
     data: [],
@@ -149,10 +118,10 @@ let multipleSelection: any[] = []
 const router = useRouter()
 const route = useRoute()
 
-async function getBookList() {
+async function getStaffList() {
     try {
         list.value.listLoading = true;
-        const { data } = await requestGetBookList(listQuery.value)
+        const { data } = await requestGetStaffList(listQuery.value)
         console.log("booklist", data);
         list.value.listLoading = false
         list.value.data = data.record
@@ -167,11 +136,24 @@ async function getBookList() {
     }
 }
 
-async function getCategories() {
+async function getDepartments() {
     try {
-        const { data } = await requestGetBookCategories()
-        categoryOptions.value = data.record
-        console.log("category", data);
+        const { data } = await requestGetDepartList()
+        departOptions.value = data.record
+        listQuery.value.s_departId = departOptions.value[0].id
+    } catch (error) {
+        ElMessage({
+            type: "error",
+            message: String(error)
+        })
+    }
+}
+
+async function getRoles() {
+    try {
+        const { data } = await requestGetRoleList()
+        roleOptions.value = data.record
+        listQuery.value.s_roleId = roleOptions.value[0].id
     } catch (error) {
         ElMessage({
             type: "error",
@@ -185,7 +167,6 @@ function handleSelectionChange(val: any[]) {
 }
 
 function handleResetSearch() {
-    listQuery.value.s_categoryIds = []
     listQuery.value = defaultListQuery
 }
 
@@ -209,42 +190,18 @@ function handleDelete(index: number, row: any) {
     });
 }
 
-function handleShowStatusChange(index: number, row: any) {
-    let data = new URLSearchParams();
-    ;
-    data.append("ids", row.id);
-    data.append("showStatus", row.showStatus);
-    // updateShowStatus(data).then(response => {
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // }).catch(error => {
-    //     if (row.showStatus === 0) {
-    //         row.showStatus = 1;
-    //     } else {
-    //         row.showStatus = 0;
-    //     }
-    // });
-    // ElMessage({
-    //     message: '修改成功',
-    //     type: 'success',
-    //     duration: 1000
-    // });
-}
 function handleSizeChange(val: number) {
     listQuery.value.page = 1;
     listQuery.value.limit = val;
-    getBookList();
+    getStaffList();
 }
 function handleCurrentChange(val: number) {
     listQuery.value.page = val;
-    getBookList();
+    getStaffList();
 }
-function searchBrandList() {
+function searchDepartments() {
     listQuery.value.page = 1;
-    getBookList();
+    getStaffList();
 }
 function handleBatchOperate() {
     console.log(multipleSelection);
@@ -289,9 +246,9 @@ function handleBatchOperate() {
 if (route.query.s_pressName) {
     listQuery.value.s_pressName = String(route.query.s_pressName)
 }
-getBookList()
-getCategories()
-
+getStaffList()
+getDepartments()
+getRoles()
 
 </script>
 <style scoped>

@@ -23,41 +23,6 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         ]
     },
     {
-        path: "/company",
-        component: Layout,
-        name: "company",
-        meta: {
-            title: "公司管理",
-            icon: "carbon:id-management",
-            roles: ["sys:goods"],
-            parentId: 0,
-        },
-        children: [
-            {
-                path: "/staff",
-                component: () => import("@/views/company/staff.vue"),
-                name: "staff",
-                meta: {
-                    title: "员工管理",
-                    icon: "ic:baseline-manage-accounts",
-                    roles: ["sys:goodsCategory"],
-                    parentId: 34,
-                },
-            },
-            {
-                path: "/deal",
-                component: () => import("@/views/company/deal.vue"),
-                name: "deal",
-                meta: {
-                    title: "财务管理",
-                    icon: "carbon:order-details",
-                    roles: ["sys:goodsCategory"],
-                    parentId: 34,
-                },
-            },
-        ],
-    },
-    {
         path: "/product",
         component: Layout,
         name: "product",
@@ -118,6 +83,82 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 },
             },
         ],
+    },
+    {
+        path: "/sale",
+        component: Layout,
+        name: "sale",
+        meta: {
+            title: "销售管理",
+            icon: "iconoir:home-sale",
+            roles: ["sys:goods"],
+            parentId: 0,
+        },
+        children: [
+            {
+                path: "/order",
+                component: () => import("@/views/company/StaffList.vue"),
+                name: "order",
+                meta: {
+                    title: "订单管理",
+                    icon: "fluent:clipboard-note-20-regular",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+
+        ],
+    },
+    {
+        path: "/company",
+        component: Layout,
+        name: "company",
+        meta: {
+            title: "公司管理",
+            icon: "carbon:id-management",
+            roles: ["sys:goods"],
+            parentId: 0,
+        },
+        children: [
+            {
+                path: "/staff",
+                component: () => import("@/views/company/StaffList.vue"),
+                name: "staff",
+                meta: {
+                    title: "员工管理",
+                    icon: "ic:baseline-manage-accounts",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+            {
+                path: "/deal",
+                component: () => import("@/views/company/DealList.vue"),
+                name: "deal",
+                meta: {
+                    title: "财务管理",
+                    icon: "carbon:order-details",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+        ],
+    },
+    {
+        path: '/reabout',
+        component: Layout,
+        redirect: '/about',
+        meta: {
+            title: "关于",
+            icon: "akar-icons:info",
+            roles: ["sys:manage"]
+        },
+        children: [
+            {
+                path: '/about',
+                component: () => import("@/views/about/About.vue"),
+            },
+        ]
     },
 ]
 

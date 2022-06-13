@@ -1,7 +1,7 @@
 <template>
     <div class="fixed">
         <el-scrollbar>
-            <el-menu :default-active="activeIndex" class="menu" :collapse="isCollapse" background-color="#304156"
+            <el-menu :default-active="route.path" class="menu" :collapse="isCollapse" background-color="#304156"
                 text-color="#303133" unique-opened router>
                 <el-menu-item index="/dashboard">
                     Logo
@@ -30,10 +30,7 @@ const isCollapse = computed(() => {
 //     console.log(index, indexPath)
 // }
 const route = useRoute()
-const activeIndex = computed(() => {
-    const { path } = route
-    return path
-})
+
 //菜单数据
 
 const menuList = computed(() => {
