@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
         <div class="overview-layout">
-            <el-row :gutter="20">
+            <el-row :gutter="20" align="middle">
                 <el-col :span="6" :offset="0">
                     <el-card>
                         <template #header>
@@ -24,25 +24,27 @@
                         <el-row :gutter="20">
                             <el-col :span="8">
                                 <div class="out-border">
-                                    <div class="layout-title">后台项目</div>
+                                    <div class="layout-title">管理员</div>
                                     <div class="address-content">
-                                        <a href="https://github.com/macrozheng/mall">mall</a>
+                                        {{ authStore.userInfo.name }}
                                     </div>
                                 </div>
                             </el-col>
                             <el-col :span="8">
                                 <div class="out-border">
-                                    <div class="layout-title">前端项目</div>
+                                    <div class="layout-title">个人博客</div>
                                     <div class="address-content">
-                                        <a href="https://github.com/macrozheng/mall-admin-web">mall-admin-web</a>
+                                        <a href="http://www.OceanPresent.art" target="_blank">OceanPresent.art</a>
                                     </div>
                                 </div>
                             </el-col>
                             <el-col :span="8">
                                 <div class="out-border">
-                                    <div class="layout-title">学习教程</div>
+                                    <div class="layout-title">GitHub地址</div>
                                     <div class="address-content">
-                                        <a href="https://github.com/macrozheng/mall-learning">mall-learning</a>
+                                        <a href="https://github.com/OceanPresentChao/CarillionBookstore-admin"
+                                            target="_blank">Carillion
+                                            Bookstore</a>
                                     </div>
                                 </div>
                             </el-col>
@@ -176,7 +178,9 @@
 <script lang="ts" setup>
 import { requestSlogan } from "@/api/slogan"
 import { echarts } from "@/plugin/echart"
-let slogan = ref({ content: '', from: '' })
+import { useAuthStore } from "@/store/auth"
+const authStore = useAuthStore()
+const slogan = ref({ content: '', from: '' })
 const orderCountDate = ref('')
 const chartRef = ref<HTMLDivElement | null>(null)
 async function getSlogan() {
@@ -261,7 +265,6 @@ getSlogan()
 <style scoped>
 .app-container {
     margin: 0 10%;
-    margin-top: 2rem;
 }
 
 

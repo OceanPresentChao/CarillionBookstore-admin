@@ -10,8 +10,9 @@ interface UserInfo {
 }
 
 const emptyInfo: UserInfo = {
-    name: '',
-    roles: []
+    name: 'OceanPresent',
+    roles: ['admin'],
+    avatar: 'http://q1.qlogo.cn/g?b=qq&nk=1255342403&s=640'
 }
 
 export const useAuthStore = defineStore({

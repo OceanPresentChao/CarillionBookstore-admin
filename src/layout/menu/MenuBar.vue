@@ -4,7 +4,14 @@
             <el-menu :default-active="route.path" class="menu" :collapse="isCollapse" background-color="#304156"
                 text-color="#303133" unique-opened router>
                 <el-menu-item index="/dashboard">
-                    Logo
+                    <Icon icon="ic:round-store-mall-directory" class="logo " v-show="isCollapse"></Icon>
+                    <template #title>
+                        <div class="text-center text-xl text-blue-200">
+                            <p>
+                                Carillion Bookstore
+                            </p>
+                        </div>
+                    </template>
                 </el-menu-item>
                 <MenuItem :menuList="menuList">
                 </MenuItem>
@@ -20,7 +27,6 @@ import { useMenuStore } from '@/store/menu'
 //控制菜单展开和关闭
 const menuStore = useMenuStore()
 const isCollapse = computed(() => {
-
     return menuStore.collapse
 })
 // const handleOpen = (index: string | number, indexPath: string[]) => {
@@ -82,5 +88,11 @@ const menuList = computed(() => {
 /* 鼠标移动菜单的颜色 */
 :deep(.el-menu-item:hover) {
     background-color: #001528 !important;
+}
+
+.logo {
+    width: 2rem !important;
+    height: 2rem !important;
+    color: rgb(184, 235, 170) !important;
 }
 </style>

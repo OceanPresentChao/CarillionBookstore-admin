@@ -16,10 +16,7 @@ import type { RouteLocationMatched } from 'vue-router';
 
 const route = useRoute()
 let levelList = ref<any>(null)
-watch(route, () => {
-    getBreadcrumb()
-}, { immediate: true })
-getBreadcrumb()
+
 function getBreadcrumb() {
     let matched: RouteLocationMatched[] = route.matched.filter(item => item.meta.title)
     const first = matched[0]
@@ -30,7 +27,10 @@ function getBreadcrumb() {
     levelList.value = breadmatched
 }
 
-
+watch(route, () => {
+    getBreadcrumb()
+}, { immediate: true })
+getBreadcrumb()
 </script>
 
 <style scoped>

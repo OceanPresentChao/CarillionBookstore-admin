@@ -31,7 +31,7 @@ export const useTabsStore = defineStore({
             this.$state.tabsList.push(tab)
         },
         clearTabs() {
-            this.tabsList.splice(1, this.tabsList.length - 1)
+            this.tabsList.splice(0, this.tabsList.length)
         }
     }
 
