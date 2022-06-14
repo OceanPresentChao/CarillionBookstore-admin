@@ -2,7 +2,7 @@ import request from '@/utils/request';
 
 export function requestGetPressList(params: { limit: number, page: number, s_name?: string }) {
     return request({
-        url: '/api/v1/press/list',
+        url: '/mockApi/v1/press/list',
         method: 'GET',
         params
     })
@@ -17,7 +17,7 @@ export function requestGetBookList(params: {
     s_isShow?: boolean,
 }) {
     return request({
-        url: '/api/v1/book/list',
+        url: '/mockApi/v1/book/list',
         method: 'GET',
         params
     })
@@ -25,7 +25,7 @@ export function requestGetBookList(params: {
 
 export function requestGetBookCategories(params: Object = {}) {
     return request({
-        url: '/api/v1/book/category',
+        url: '/mockApi/v1/book/category',
         method: 'GET',
         params
     })

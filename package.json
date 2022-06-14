@@ -18,8 +18,10 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.182",
     "@vueuse/core": "^8.2.3",
     "echarts": "^5.3.2",
+    "lodash": "^4.17.21",
     "vue": "^3.2.31",
     "vue-i18n": "^9.1.10"
   },

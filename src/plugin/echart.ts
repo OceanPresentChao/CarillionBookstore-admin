@@ -22,7 +22,8 @@ import {
     ToolboxComponent,
     type ToolboxComponentOption,
     LegendComponent,
-    type LegendComponentOption
+    type LegendComponentOption,
+    DataZoomComponent
 } from 'echarts/components';
 import { LabelLayout, UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -49,7 +50,9 @@ echarts.use([
     UniversalTransition,
     CanvasRenderer,
     ToolboxComponent,
-    LegendComponent
+    LegendComponent,
+    BarChart,
+    DataZoomComponent
 ]);
 
 export { echarts }

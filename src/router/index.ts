@@ -96,12 +96,34 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         },
         children: [
             {
-                path: "/order",
-                component: () => import("@/views/company/StaffList.vue"),
+                path: "/sale/user",
+                component: () => import("@/views/sale/UserList.vue"),
+                name: "user",
+                meta: {
+                    title: "用户管理",
+                    icon: "ant-design:user-outlined",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+            {
+                path: "/sale/order",
+                component: () => import("@/views/sale/OrderList.vue"),
                 name: "order",
                 meta: {
                     title: "订单管理",
                     icon: "fluent:clipboard-note-20-regular",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+            {
+                path: "/sale/vip",
+                component: () => import("@/views/sale/VipList.vue"),
+                name: "vip",
+                meta: {
+                    title: "会员制度",
+                    icon: "quill:vip",
                     roles: ["sys:goodsCategory"],
                     parentId: 34,
                 },
@@ -143,6 +165,39 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 },
             },
         ],
+    },
+    {
+        path: '/food',
+        component: Layout,
+        meta: {
+            title: "食品管理",
+            icon: "dashicons:food",
+            roles: ["sys:manage"]
+        },
+        children: [
+            {
+                path: "/food/snack",
+                component: () => import("@/views/snack/SnackList.vue"),
+                name: "snack",
+                meta: {
+                    title: "小吃管理",
+                    icon: "ep:food",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+            {
+                path: "/food/addFood",
+                component: () => import("@/views/snack/AddSnack.vue"),
+                name: "addSnack",
+                meta: {
+                    title: "添加小吃",
+                    icon: "fluent:food-grains-20-regular",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+        ]
     },
     {
         path: '/reabout',

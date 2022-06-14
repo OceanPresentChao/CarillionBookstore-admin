@@ -4,6 +4,7 @@ specifiers:
   '@iconify/vue': ^3.2.1
   '@intlify/vite-plugin-vue-i18n': ^3.4.0
   '@types/js-cookie': ^3.0.2
+  '@types/lodash': ^4.14.182
   '@types/node': ^16.11.25
   '@types/nprogress': ^0.2.0
   '@vitejs/plugin-vue': ^2.2.2
@@ -17,6 +18,7 @@ specifiers:
   echarts: ^5.3.2
   element-plus: ^2.2.2
   js-cookie: ^3.0.1
+  lodash: ^4.17.21
   nprogress: ^0.2.0
   pinia: ^2.0.14
   pinia-plugin-persist: ^1.0.0
@@ -34,8 +36,10 @@ specifiers:
   vue-tsc: ^0.31.4
 
 dependencies:
+  '@types/lodash': 4.14.182
   '@vueuse/core': mirrors.tencent.com/@vueuse/core/8.4.0_vue@3.2.33
   echarts: 5.3.2
+  lodash: 4.17.21
   vue: mirrors.tencent.com/vue/3.2.33
   vue-i18n: 9.1.10_vue@3.2.33
 
@@ -272,7 +276,6 @@ packages:
 
   /@types/lodash/4.14.182:
     resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
-    dev: true
 
   /@types/nprogress/0.2.0:
     resolution: {integrity: sha512-1cYJrqq9GezNFPsWTZpFut/d4CjpZqA0vhqDUPFWYKF1oIyBz5qnoYMzR+0C/T96t3ebLAC1SSnwrVOm5/j74A==}
@@ -1099,7 +1102,6 @@ packages:
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
 
   /mdn-data/2.0.14:
     resolution: {integrity: sha512-dn6wd0uw5GsdswPFfsgMp5NSB0/aDe6fK94YJV/AJDYXL6HVLWBsxeq7js7Ad+mU2K9LAlwpk6kN2D5mwCPVow==}

@@ -49,15 +49,20 @@ export default defineConfig({
   server: {
     open: true,
     proxy: {
-      '/api': {
+      '/mockApi': {
         target: 'https://mock.apifox.cn/m1/1084382-0-default',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        rewrite: (path) => path.replace(/^\/mockApi/, '')
       },
       '/slogan': {
         target: 'http://v1.hitokoto.cn',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/slogan/, '')
+      },
+      '/realApi': {
+        target: 'http://dev.api.yurzi.top:11451',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/realApi/, '')
       }
     }
   },
