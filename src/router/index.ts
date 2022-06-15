@@ -211,6 +211,22 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         ]
     },
     {
+        path: '/replayground',
+        component: Layout,
+        redirect: '/playground',
+        meta: {
+            title: "广场",
+            icon: "arcticons:google-play-console",
+            roles: ["sys:manage"]
+        },
+        children: [
+            {
+                path: '/playground',
+                component: () => import("@/views/playground/Playground.vue"),
+            },
+        ]
+    },
+    {
         path: '/reabout',
         component: Layout,
         redirect: '/about',
@@ -226,6 +242,7 @@ export const menuRoutes: Array<RouteRecordRaw> = [
             },
         ]
     },
+
 ]
 
 const constantRoutes: Array<RouteRecordRaw> = [

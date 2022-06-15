@@ -5,6 +5,7 @@ import { Icon } from '@iconify/vue';
 import { i18n } from "@/locales"
 import * as directives from "@/directives";
 import App from './App.vue'
+
 import './style/transition.css'
 import './style/manage.css'
 import './style/index.css'

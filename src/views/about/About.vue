@@ -28,8 +28,10 @@
                 </p>
                 <div class="my-5">
                     <button class="bg-blue-400 rounded-lg p-1 text-white">
-                        <Icon class="inline-block w-5 h-5" icon="carbon:email"></Icon>
-                        <span>Click Me</span>
+                        <a href="https://github.com/OceanPresentChao/CarillionBookstore-admin" target="_blank">
+                            <Icon class="inline-block w-5 h-5" icon="carbon:email"></Icon>
+                            <span>Click Me</span>
+                        </a>
                     </button>
                 </div>
             </div>
