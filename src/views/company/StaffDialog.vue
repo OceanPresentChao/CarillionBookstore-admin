@@ -1,6 +1,7 @@
 <template>
     <div>
-        <el-dialog v-model="isShow" title="编辑员工" destroy-on-close :show-close="false">
+        <el-dialog v-model="isShow" title="编辑员工" destroy-on-close :show-close="false" :close-on-click-modal="false"
+            :close-on-press-escape="false">
             <el-form :model="modelValue" label-width="120px" :rules="formRules" ref="formRef" append-to-body>
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="modelValue.name" />

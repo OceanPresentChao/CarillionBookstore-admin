@@ -4,7 +4,9 @@ import {
     // 系列类型的定义后缀都为 SeriesOption
     type BarSeriesOption,
     LineChart,
-    type LineSeriesOption
+    type LineSeriesOption,
+    SunburstChart,
+    type SunburstSeriesOption
 } from 'echarts/charts';
 import {
     TitleComponent,
@@ -36,6 +38,9 @@ type ECOption = echarts.ComposeOption<
     | TooltipComponentOption
     | GridComponentOption
     | DatasetComponentOption
+    | SunburstSeriesOption
+    | ToolboxComponentOption
+    | LegendComponentOption
 >;
 
 // 注册必须的组件
@@ -52,7 +57,8 @@ echarts.use([
     ToolboxComponent,
     LegendComponent,
     BarChart,
-    DataZoomComponent
+    DataZoomComponent,
+    SunburstChart
 ]);
 
 export { echarts }

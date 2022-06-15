@@ -49,8 +49,10 @@
                     <el-table-column property="id" label="编号" width="110" align="center" />
                     <el-table-column property="name" label="名称" align="center" />
                     <el-table-column property="age" label="年龄" width="120" align="center" />
-                    <el-table-column property="depart_id" label="部门" width="170" align="center" />
-                    <el-table-column property="role_id" label="职位" width="170" align="center" />
+                    <el-table-column property="depart_id" label="部门" width="170" align="center"
+                        :formatter="(row: any, column: any, cellValue: number, index: number) => { return optionStore.getDepartFromId(cellValue) }" />
+                    <el-table-column property="role_id" label="职位" width="170" align="center"
+                        :formatter="(row: any, column: any, cellValue: number, index: number) => { return optionStore.getRoleFromId(cellValue) }" />
                     <el-table-column property="salary" label="薪水" width="120" align="center" />
                     <el-table-column property="phone" label="电话" width="170" align="center" />
                     <el-table-column label="操作" width="180" align="center">
@@ -95,12 +97,14 @@ import { requestCreateStaff, requestDeleteStaff, requestGetStaffList, requestUpd
 import { useOptionStore } from '@/store/option';
 import _ from "lodash"
 const { t } = useI18n()
+const route = useRoute()
 const operates: Operate[] = [
     {
         label: "删除员工",
         value: "delStaff"
     }
 ]
+
 const operateType = ref("delStaff")
 const optionStore = useOptionStore()
 const defaultListQuery = {
@@ -113,9 +117,7 @@ const defaultListQuery = {
 }
 
 const dialogProps = ref({ isShow: false, isEdit: true })
-
 const listQuery = ref(JSON.parse(JSON.stringify(defaultListQuery)))
-
 const list = ref({
     listLoading: false,
     data: [],
@@ -124,7 +126,6 @@ const list = ref({
     pageSize: 0,
 })
 let multipleSelection: any[] = []
-const route = useRoute()
 const defaultStaffParam = {
     id: 1,
     roleId: 1,
@@ -181,35 +182,27 @@ function handleUpdate(index: number, row: any) {
 }
 
 async function handleSubmit() {
-    try {
-        let res: any = ''
-        if (dialogProps.value.isEdit) {
-            const { data } = await requestUpdateStaff(staffParam.value)
-            res = data
-        } else {
-            const { data } = await requestCreateStaff(_.assign(staffParam.value, { role: staffParam.value.roleId }))
-            res = data
-        }
-        if (res.code >= 200 && res.code < 300) {
-            getStaffList()
-            ElMessage({
-                type: "success",
-                message: res.message
-            })
-        } else {
-            ElMessage({
-                type: "error",
-                message: res.message
-            })
-        }
-    } catch (error) {
+    let res: any = ''
+    if (dialogProps.value.isEdit) {
+        const { data } = await requestUpdateStaff(staffParam.value)
+        res = data
+    } else {
+        const { data } = await requestCreateStaff(_.assign(staffParam.value, { role: staffParam.value.roleId }))
+        res = data
+    }
+    if (res.code >= 200 && res.code < 300) {
+        getStaffList()
+        ElMessage({
+            type: "success",
+            message: res.message
+        })
+    } else {
         ElMessage({
             type: "error",
-            message: String(error)
+            message: res.message
         })
-    } finally {
-        dialogProps.value.isShow = false
     }
+    dialogProps.value.isShow = false
 }
 
 async function handleDelete(index: number, row: any) {
@@ -228,7 +221,6 @@ async function handleDelete(index: number, row: any) {
             duration: 1000
         });
     }
-
 }
 
 function handleSizeChange(val: number) {
@@ -266,6 +258,11 @@ function handleBatchOperate() {
         });
         return;
     }
+}
+
+
+if (route.query.s_roleId) {
+    listQuery.value.s_roleId = Number(route.query.s_roleId)
 }
 
 getStaffList()

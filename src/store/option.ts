@@ -24,6 +24,7 @@ interface RoleOption {
     depart: number
 }
 
+
 export const useOptionStore = defineStore({
     id: Types.OPTION,
     state: () => {
@@ -103,6 +104,17 @@ export const useOptionStore = defineStore({
                 return false
             })
             return name
+        },
+        getIdFromRole(role: string): number {
+            let id = -1
+            this.roleOptions.some((v) => {
+                if (v.name === role) {
+                    id = v.id
+                    return true
+                }
+                return false
+            })
+            return id
         }
     }
 })

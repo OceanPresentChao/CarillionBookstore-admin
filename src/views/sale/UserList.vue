@@ -30,7 +30,7 @@
         <el-card class="operate-container" shadow="never">
             <Icon icon="bi:card-list" class="titleIcon"></Icon>
             <span>数据列表</span>
-            <el-button class="btn-add" @click="" size="default">
+            <el-button class="btn-add" @click="handleCreate" size="default">
                 添加
             </el-button>
         </el-card>
@@ -80,11 +80,13 @@
                 :current-page.sync="listQuery.page" :total="list.total">
             </el-pagination>
         </div>
+        <UserDialog :isShow="dialogProps.isShow" :isEdit="dialogProps.isEdit" v-model="userParam"
+            @cancel="dialogProps.isShow = false" @submit="handleSubmit"></UserDialog>
     </div>
 </template>
 <script lang="ts" setup >
-import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestGetUserList } from '@/api/user';
+import { ElMessage } from 'element-plus';
+import { requestGetUserList, requestDeleteUser, requestUpdateUser, requestCreateUser } from '@/api/user';
 import _ from "lodash"
 const { t } = useI18n()
 const operates: Operate[] = [
@@ -106,8 +108,6 @@ const defaultListQuery: {
     s_level: -1
 }
 const listQuery = ref<typeof defaultListQuery>(JSON.parse(JSON.stringify(defaultListQuery)))
-const VIPOptions = [{ level: -1, name: 'ALL' }, { level: 0, name: 'VIP 0' }, { level: 1, name: 'VIP 1' }, { level: 2, name: 'VIP 2' }, { level: 3, name: 'VIP 3' }, { level: 4, name: 'VIP 4' }, { level: 5, name: 'VIP 5' }, { level: 6, name: 'VIP 6' }, { level: 7, name: 'VIP 7' }]
-
 const list = ref({
     listLoading: false,
     data: [],
@@ -115,6 +115,17 @@ const list = ref({
     totalPage: 0,
     pageSize: 0,
 })
+
+const VIPOptions = [{ level: -1, name: 'ALL' }, { level: 0, name: 'VIP 0' }, { level: 1, name: 'VIP 1' }, { level: 2, name: 'VIP 2' }, { level: 3, name: 'VIP 3' }, { level: 4, name: 'VIP 4' }, { level: 5, name: 'VIP 5' }, { level: 6, name: 'VIP 6' }, { level: 7, name: 'VIP 7' }]
+const dialogProps = ref({ isShow: false, isEdit: true })
+const defaultUserParam = {
+    id: 1,
+    name: '',
+    mail: '',
+    birthday: '',
+    password: ''
+}
+const userParam = ref<typeof defaultUserParam>(JSON.parse(JSON.stringify(defaultUserParam)))
 let multipleSelection: any[] = []
 const router = useRouter()
 const route = useRoute()
@@ -148,24 +159,61 @@ function handleResetSearch() {
     listQuery.value = defaultListQuery
 }
 
-function handleUpdate(index: number, row: any) {
-    router.push({ path: "/product/updateBook", query: { id: row.id } })
+function handleCreate() {
+    dialogProps.value.isShow = true
+    dialogProps.value.isEdit = false
+    userParam.value = defaultUserParam
 }
 
-function handleDelete(index: number, row: any) {
-    // deleteBrand(row.id).then(response => {
-    //     ElMessage({
-    //         message: '删除成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    //     getList();
-    // });
-    ElMessage({
-        message: '删除成功',
-        type: 'success',
-        duration: 1000
-    });
+async function handleUpdate(index: number, row: any) {
+    dialogProps.value.isShow = true
+    dialogProps.value.isEdit = true
+    userParam.value.birthday = row.birthday
+    userParam.value.name = row.name
+    userParam.value.password = row.password
+    userParam.value.mail = row.mail
+}
+
+async function handleDelete(index: number, row: any) {
+    const { data } = await requestDeleteUser({ id: row.id! })
+    if (data.code >= 200 && data.code < 300) {
+        ElMessage({
+            message: data.message,
+            type: 'success',
+            duration: 1000
+        });
+        getUserList()
+    } else {
+        ElMessage({
+            message: data.message,
+            type: 'error',
+            duration: 1000
+        });
+    }
+}
+
+async function handleSubmit() {
+    let res: any = ''
+    if (dialogProps.value.isEdit) {
+        const { data } = await requestUpdateUser(userParam.value)
+        res = data
+    } else {
+        const { data } = await requestCreateUser(_.assign(userParam.value, { email: userParam.value.mail }))
+        res = data
+    }
+    if (res.code >= 200 && res.code < 300) {
+        getUserList()
+        ElMessage({
+            type: "success",
+            message: res.message
+        })
+    } else {
+        ElMessage({
+            type: "error",
+            message: res.message
+        })
+    }
+    dialogProps.value.isShow = false
 }
 
 function handleSizeChange(val: number) {

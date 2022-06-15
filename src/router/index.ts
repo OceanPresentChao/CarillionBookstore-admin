@@ -143,7 +143,7 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         },
         children: [
             {
-                path: "/staff",
+                path: "/company/staff",
                 component: () => import("@/views/company/StaffList.vue"),
                 name: "staff",
                 meta: {
@@ -154,12 +154,23 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 },
             },
             {
-                path: "/deal",
+                path: "/company/deal",
                 component: () => import("@/views/company/DealList.vue"),
                 name: "deal",
                 meta: {
                     title: "财务管理",
                     icon: "carbon:order-details",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                },
+            },
+            {
+                path: "/company/department",
+                component: () => import("@/views/company/DepartmentPage.vue"),
+                name: "department",
+                meta: {
+                    title: "部门管理",
+                    icon: "bi:building",
                     roles: ["sys:goodsCategory"],
                     parentId: 34,
                 },

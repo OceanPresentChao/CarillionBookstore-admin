@@ -13,6 +13,31 @@ export function requestGetUserList(params: {
     })
 }
 
+export function requestCreateUser(body: {
+    name: string,
+    password: string,
+    email: string,
+}) {
+    return request({
+        url: `/realApi/v1/vip/register/`,
+        method: 'POST',
+        data: body
+    })
+}
+
+export function requestUpdateUser(body: {
+    id: number,
+    password: string,
+    mail: string,
+    birthday: string
+}) {
+    return request({
+        url: `/realApi/v1/vip/update/`,
+        method: 'POST',
+        data: body
+    })
+}
+
 export function requestDeleteUser(params: {
     id: number,
 }) {
