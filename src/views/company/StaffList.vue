@@ -19,13 +19,16 @@
                     </el-form-item>
                     <el-form-item label="员工部门：">
                         <el-select v-model="listQuery.s_departId" placeholder="Select" style="width: 240px">
-                            <el-option v-for="item in departOptions" :key="item.id" :label="item.name"
+                            <el-option v-for="item in optionStore.departmentOptions" :key="item.id" :label="item.name"
                                 :value="item.id" />
+                            <el-option :key="-1" label="请选择" :value="-1"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="员工职位：">
                         <el-select v-model="listQuery.s_roleId" placeholder="Select" style="width: 240px">
-                            <el-option v-for="item in roleOptions" :key="item.id" :label="item.name" :value="item.id" />
+                            <el-option v-for="item in optionStore.roleOptions" :key="item.id" :label="item.name"
+                                :value="item.id" />
+                            <el-option :key="-1" label="请选择" :value="-1"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-form>
@@ -34,7 +37,7 @@
         <el-card class="operate-container" shadow="never">
             <Icon icon="bi:card-list" class="titleIcon"></Icon>
             <span>数据列表</span>
-            <el-button class="btn-add" @click="" size="default">
+            <el-button class="btn-add" @click="handleCreate" size="default">
                 添加
             </el-button>
         </el-card>
@@ -46,11 +49,10 @@
                     <el-table-column property="id" label="编号" width="110" align="center" />
                     <el-table-column property="name" label="名称" align="center" />
                     <el-table-column property="age" label="年龄" width="120" align="center" />
-                    <el-table-column property="depart" label="部门" width="170" align="center" />
-                    <el-table-column property="role" label="职位" width="170" align="center" />
-
+                    <el-table-column property="depart_id" label="部门" width="170" align="center" />
+                    <el-table-column property="role_id" label="职位" width="170" align="center" />
                     <el-table-column property="salary" label="薪水" width="120" align="center" />
-                    <el-table-column property="telphone" label="电话" width="170" align="center" />
+                    <el-table-column property="phone" label="电话" width="170" align="center" />
                     <el-table-column label="操作" width="180" align="center">
                         <template #default="scope">
                             <el-button size="default" @click="handleUpdate(scope.$index, scope.row)">编辑
@@ -83,11 +85,15 @@
                 :current-page.sync="listQuery.page" :total="list.total">
             </el-pagination>
         </div>
+        <StaffDialog :isShow="dialogProps.isShow" :isEdit="dialogProps.isEdit" v-model="staffParam"
+            @cancel="dialogProps.isShow = false" @submit="handleSubmit"></StaffDialog>
     </div>
 </template>
 <script lang="ts" setup >
-import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestGetStaffList, requestGetDepartList, requestGetRoleList } from '@/api/company';
+import { ElMessage } from 'element-plus';
+import { requestCreateStaff, requestDeleteStaff, requestGetStaffList, requestUpdateStaff } from '@/api/company';
+import { useOptionStore } from '@/store/option';
+import _ from "lodash"
 const { t } = useI18n()
 const operates: Operate[] = [
     {
@@ -96,17 +102,20 @@ const operates: Operate[] = [
     }
 ]
 const operateType = ref("delStaff")
+const optionStore = useOptionStore()
 const defaultListQuery = {
     limit: 5,
     page: 1,
     s_name: "",
-    s_roleId: 0,
-    s_departId: 0,
-    s_age: 0,
-};
+    s_roleId: -1,
+    s_departId: -1,
+    s_age: -1,
+}
+
+const dialogProps = ref({ isShow: false, isEdit: true })
+
 const listQuery = ref(JSON.parse(JSON.stringify(defaultListQuery)))
-const departOptions = ref<any[]>([])
-const roleOptions = ref<any[]>([])
+
 const list = ref({
     listLoading: false,
     data: [],
@@ -115,45 +124,28 @@ const list = ref({
     pageSize: 0,
 })
 let multipleSelection: any[] = []
-const router = useRouter()
 const route = useRoute()
+const defaultStaffParam = {
+    id: 1,
+    roleId: 1,
+    salary: 0,
+    age: 0,
+    card: '',
+    name: '',
+    telphone: '',
+}
+const staffParam = ref<typeof defaultStaffParam>(JSON.parse(JSON.stringify(defaultStaffParam)))
+
 
 async function getStaffList() {
     try {
         list.value.listLoading = true;
         const { data } = await requestGetStaffList(listQuery.value)
-        console.log("booklist", data);
         list.value.listLoading = false
         list.value.data = data.record
         list.value.total = data.total
         list.value.totalPage = Math.floor(data.total / listQuery.value.limit) + 1
         list.value.pageSize = listQuery.value.limit
-    } catch (error) {
-        ElMessage({
-            type: "error",
-            message: String(error)
-        })
-    }
-}
-
-async function getDepartments() {
-    try {
-        const { data } = await requestGetDepartList()
-        departOptions.value = data.record
-        listQuery.value.s_departId = departOptions.value[0].id
-    } catch (error) {
-        ElMessage({
-            type: "error",
-            message: String(error)
-        })
-    }
-}
-
-async function getRoles() {
-    try {
-        const { data } = await requestGetRoleList()
-        roleOptions.value = data.record
-        listQuery.value.s_roleId = roleOptions.value[0].id
     } catch (error) {
         ElMessage({
             type: "error",
@@ -170,24 +162,73 @@ function handleResetSearch() {
     listQuery.value = defaultListQuery
 }
 
-function handleUpdate(index: number, row: any) {
-    router.push({ path: "/product/updateBook", query: { id: row.id } })
+function handleCreate() {
+    dialogProps.value.isShow = true
+    dialogProps.value.isEdit = false
+    staffParam.value = defaultStaffParam
 }
 
-function handleDelete(index: number, row: any) {
-    // deleteBrand(row.id).then(response => {
-    //     ElMessage({
-    //         message: '删除成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    //     getList();
-    // });
-    ElMessage({
-        message: '删除成功',
-        type: 'success',
-        duration: 1000
-    });
+function handleUpdate(index: number, row: any) {
+    dialogProps.value.isShow = true
+    dialogProps.value.isEdit = true
+    staffParam.value.id = row.id
+    staffParam.value.name = row.name
+    staffParam.value.age = row.age
+    staffParam.value.card = row.card
+    staffParam.value.roleId = row.role_id
+    staffParam.value.salary = Number(row.salary)
+    staffParam.value.telphone = row.phone
+}
+
+async function handleSubmit() {
+    try {
+        let res: any = ''
+        if (dialogProps.value.isEdit) {
+            const { data } = await requestUpdateStaff(staffParam.value)
+            res = data
+        } else {
+            const { data } = await requestCreateStaff(_.assign(staffParam.value, { role: staffParam.value.roleId }))
+            res = data
+        }
+        if (res.code >= 200 && res.code < 300) {
+            getStaffList()
+            ElMessage({
+                type: "success",
+                message: res.message
+            })
+        } else {
+            ElMessage({
+                type: "error",
+                message: res.message
+            })
+        }
+    } catch (error) {
+        ElMessage({
+            type: "error",
+            message: String(error)
+        })
+    } finally {
+        dialogProps.value.isShow = false
+    }
+}
+
+async function handleDelete(index: number, row: any) {
+    const { data } = await requestDeleteStaff({ id: row.id! })
+    if (data.code >= 200 && data.code < 300) {
+        ElMessage({
+            message: data.message,
+            type: 'success',
+            duration: 1000
+        });
+        getStaffList()
+    } else {
+        ElMessage({
+            message: data.message,
+            type: 'error',
+            duration: 1000
+        });
+    }
+
 }
 
 function handleSizeChange(val: number) {
@@ -213,11 +254,10 @@ function handleBatchOperate() {
         });
         return;
     }
-    let showStatus = 0;
-    if (operateType.value === 'showBrand') {
-        showStatus = 1;
-    } else if (operateType.value === 'hideBrand') {
-        showStatus = 0;
+    if (operateType.value === 'delStaff') {
+        for (let i = 0; i < multipleSelection.length; i++) {
+            handleDelete(0, { id: multipleSelection[i].id })
+        }
     } else {
         ElMessage({
             message: '请选择批量操作类型',
@@ -226,30 +266,11 @@ function handleBatchOperate() {
         });
         return;
     }
-    let ids = [];
-    for (let i = 0; i < multipleSelection.length; i++) {
-        ids.push(multipleSelection[i].id);
-    }
-    let data = new URLSearchParams();
-    // data.append("ids", ids);
-    // data.append("showStatus", showStatus);
-    // updateShowStatus(data).then(response => {
-    //     getList();
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // });
 }
 
-if (route.query.s_pressName) {
-    listQuery.value.s_pressName = String(route.query.s_pressName)
-}
 getStaffList()
-getDepartments()
-getRoles()
-
+optionStore.getDepartmentOptions()
+optionStore.getRoleOptions()
 </script>
 <style scoped>
 </style>

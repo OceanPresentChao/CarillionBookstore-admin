@@ -23,7 +23,8 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="图书出版日期：">
-                <el-date-picker v-model="modelValue.pubDate" type="date" placeholder="Pick a day" size="default" />
+                <el-date-picker v-model="modelValue.pubDate" type="date" placeholder="Pick a day" format="YYYY年MM月DD日"
+                    value-format="YYYY年MM月DD日" size="default" />
             </el-form-item>
             <el-form-item label="图书版本：">
                 <el-input v-model="modelValue.price"></el-input>
@@ -41,9 +42,12 @@
                     </single-upload>
                 </el-card>
             </el-form-item>
-            <el-form-item style="text-align: center">
-                <el-button type="primary" @click="handleNext()">下一步，填写商品促销</el-button>
+            <el-form-item label="是否上架:">
+                <el-switch v-model="modelValue.isShow"></el-switch>
             </el-form-item>
+            <div class="text-center">
+                <el-button type="primary" @click="handleNext()">下一步，填写商品促销</el-button>
+            </div>
         </el-form>
     </div>
 </template>

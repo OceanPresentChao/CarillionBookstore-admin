@@ -19,7 +19,7 @@
                     </el-form-item>
                     <el-form-item label="图书分类：">
                         <el-select v-model="listQuery.s_categoryIds" multiple placeholder="Select" style="width: 240px">
-                            <el-option v-for="item in categoryOptions" :key="item.id" :label="item.name"
+                            <el-option v-for="item in optionStore.bookCateOptions" :key="item.id" :label="item.name"
                                 :value="item.id" />
                         </el-select>
                     </el-form-item>
@@ -103,8 +103,9 @@
 </template>
 <script lang="ts" setup >
 import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestGetBookCategories, requestGetBookList } from '@/api/product';
-const { t } = useI18n()
+import { requestGetBookList } from '@/api/product';
+import { useOptionStore } from "@/store/option"
+const optionStore = useOptionStore()
 const operates: Operate[] = [
     {
         label: "上架图书",
@@ -136,7 +137,7 @@ const listQuery = ref({
     s_pressName: '',
     s_status: 0,
 })
-const categoryOptions = ref<any[]>([])
+
 const publishStatusOptions = ref<any[]>([])
 const list = ref({
     listLoading: false,
@@ -159,19 +160,6 @@ async function getBookList() {
         list.value.total = data.total
         list.value.totalPage = Math.floor(data.total / listQuery.value.limit) + 1
         list.value.pageSize = listQuery.value.limit
-    } catch (error) {
-        ElMessage({
-            type: "error",
-            message: String(error)
-        })
-    }
-}
-
-async function getCategories() {
-    try {
-        const { data } = await requestGetBookCategories()
-        categoryOptions.value = data.record
-        console.log("category", data);
     } catch (error) {
         ElMessage({
             type: "error",
@@ -290,7 +278,7 @@ if (route.query.s_pressName) {
     listQuery.value.s_pressName = String(route.query.s_pressName)
 }
 getBookList()
-getCategories()
+optionStore.getBookCateOptions()
 
 
 </script>
