@@ -118,17 +118,6 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 },
             },
             {
-                path: "/sale/order",
-                component: () => import("@/views/sale/OrderList.vue"),
-                name: "order",
-                meta: {
-                    title: "订单管理",
-                    icon: "fluent:clipboard-note-20-regular",
-                    roles: ["sys:goodsCategory"],
-                    parentId: 34,
-                },
-            },
-            {
                 path: "/sale/vip",
                 component: () => import("@/views/sale/VipList.vue"),
                 name: "vip",
