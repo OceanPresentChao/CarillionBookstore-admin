@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts" setup>
-import { requestCreateBook, requestGetBook } from '@/api/product';
+import { requestCreateBook, requestGetBook, requestUpdateBook } from '@/api/product';
 import { useOptionStore } from '@/store/option';
 
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -118,38 +118,33 @@ function handleCommit(isEdit: boolean) {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
+        let code = 0
+        let message = ''
         if (isEdit) {
-            // updateProduct(route.query.id, productParam).then(response => {
-            //     ElMessage({
-            //         type: 'success',
-            //         message: '提交成功',
-            //         duration: 1000
-            //     });
-            //     router.back();
-            // });
-            ElMessage({
-                type: 'success',
-                message: '提交成功',
-                duration: 1000
-            });
-            router.back();
+            const { data } = await requestUpdateBook(bookParam.value)
+            code = data.code
+            message = data.message
+
         } else {
             const { data } = await requestCreateBook(bookParam.value)
-            if (data.code >= 200 && data.code < 300) {
-                ElMessage({
-                    type: 'success',
-                    message: data.message,
-                    duration: 1000
-                });
-                location.reload();
-            } else {
-                ElMessage({
-                    type: 'error',
-                    message: data.message,
-                    duration: 1000
-                });
-            }
+            code = data.code
+            message = data.message
         }
+        if (code >= 200 && code < 300) {
+            ElMessage({
+                type: 'success',
+                message: message,
+                duration: 1000
+            });
+            location.reload();
+        } else {
+            ElMessage({
+                type: 'error',
+                message: message,
+                duration: 1000
+            });
+        }
+        router.back();
     })
 }
 
@@ -157,6 +152,7 @@ async function initBookInfo() {
     if (props.isEdit) {
         const bookId = route.query.id
         if (bookId) {
+            bookParam.value.id = Number(route.query.id)
             const { data } = await requestGetBook({ id: Number(bookId) })
             const bookData = data.record[0]
             _.assign(bookParam.value, bookData)

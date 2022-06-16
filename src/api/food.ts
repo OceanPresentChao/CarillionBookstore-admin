@@ -1,23 +1,20 @@
 import request from '@/utils/request';
 
-export function requestGetFoodList(params: {
-    limit: number,
-    page: number,
-}) {
+export function requestGetFoodList() {
     return request({
-        url: `/realApi/v1/food/list/`,
+        url: `/realApi/v1/food/info/`,
         method: 'GET',
-        params
     })
 }
 
 export function requestCreateFood(body: {
+    type: string,
     name: string,
-    password: string,
-    email: string,
+    price: number,
+    memo: string
 }) {
     return request({
-        url: `/realApi/v1/vip/register/`,
+        url: `/realApi/v1/food/info/`,
         method: 'POST',
         data: body
     })
@@ -25,13 +22,15 @@ export function requestCreateFood(body: {
 
 export function requestUpdateFood(body: {
     id: number,
-    password: string,
-    mail: string,
-    birthday: string
+    type: string,
+    name: string,
+    price: number,
+    dealamount: number,
+    memo: string
 }) {
     return request({
-        url: `/realApi/v1/vip/update/`,
-        method: 'POST',
+        url: `/realApi/v1/food/info/`,
+        method: 'PUT',
         data: body
     })
 }
@@ -40,7 +39,7 @@ export function requestDeleteFood(params: {
     id: number,
 }) {
     return request({
-        url: `/realApi/v1/vip/info/`,
+        url: `/realApi/v1/food/info/`,
         method: 'DELETE',
         params
     })

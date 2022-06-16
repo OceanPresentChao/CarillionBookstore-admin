@@ -209,14 +209,30 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 },
             },
             {
-                path: "/food/addFood",
-                component: () => import("@/views/snack/AddSnack.vue"),
+                path: "/food/createFood",
+                component: () => import("@/views/snack/SnackInfoDetail.vue"),
                 name: "addSnack",
                 meta: {
                     title: "添加小吃",
                     icon: "fluent:food-grains-20-regular",
                     roles: ["sys:goodsCategory"],
-                    parentId: 34,
+                },
+                props: {
+                    isEdit: false
+                },
+            },
+            {
+                path: "/food/updateFood",
+                component: () => import("@/views/snack/SnackInfoDetail.vue"),
+                name: "updateSnack",
+                meta: {
+                    title: "修改小吃",
+                    icon: "fluent:food-grains-20-regular",
+                    roles: ["sys:goodsCategory"],
+                    hidden: true
+                },
+                props: {
+                    isEdit: true
                 },
             },
         ]

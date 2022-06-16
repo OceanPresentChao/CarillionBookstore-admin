@@ -114,3 +114,11 @@ export function requestCreateBook(body: { name: string, categoryId: number, pres
         data: body
     })
 }
+
+export function requestUpdateBook(body: { id: number, name: string, categoryId: number, pressId: number, author: string, desc: string, pubDate: string, version: number, page: number, price: number, isShow: number }) {
+    return request({
+        url: '/realApi/v1/book/info/',
+        method: 'PUT',
+        data: body
+    })
+}

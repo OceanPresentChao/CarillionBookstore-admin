@@ -132,7 +132,7 @@ const defaultListQuery = {
     s_name: "",
     s_categoryIds: [] as number[],
     s_pressName: '',
-    s_status: 0,
+    s_status: -1,
 };
 const listQuery = ref<typeof defaultListQuery>(JSON.parse(JSON.stringify(defaultListQuery)))
 const list = ref({

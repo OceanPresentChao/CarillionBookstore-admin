@@ -1,52 +1,29 @@
 <template>
     <div class="app-container">
-        <el-card class="filter-container" shadow="never">
-            <div>
-                <Icon icon="carbon:search" class="titleIcon"></Icon>
-                <span>筛选搜索</span>
-                <el-button style="float: right" @click="searchDepartments" type="primary" size="default">
-                    查询结果
-                </el-button>
-                <el-button style="float: right;margin-right: 15px" @click="handleResetSearch()" size="default">
-                    重置
-                </el-button>
-            </div>
-            <div style="margin-top: 15px">
-                <el-form :inline="true" :model="listQuery" size="default" label-width="140px">
-                    <el-form-item label="输入搜索：">
-                        <el-input style="width: 203px" v-model="listQuery.s_name" placeholder="用户名称">
-                        </el-input>
-                    </el-form-item>
-                    <el-form-item label="用户会员等级：">
-                        <el-select v-model="listQuery.s_departId" placeholder="Select" style="width: 240px">
-                            <el-option v-for="item in VIPOptions" :key="item.level" :label="item.name"
-                                :value="item.level" />
-                        </el-select>
-                    </el-form-item>
-
-                </el-form>
-            </div>
-        </el-card>
         <el-card class="operate-container" shadow="never">
             <Icon icon="bi:card-list" class="titleIcon"></Icon>
             <span>数据列表</span>
-            <el-button class="btn-add" @click="" size="default">
+            <el-button class="btn-add" @click="handleCreate" size="default">
                 添加
             </el-button>
         </el-card>
         <div class="table-container">
             <suspense>
-                <el-table ref="brandTable" :data="list.data" style="width: 100%"
+                <el-table ref="brandTable" :data="displayList" style="width: 100%"
                     @selection-change="handleSelectionChange" v-loading="list.listLoading" border>
                     <el-table-column type="selection" width="60" align="center" />
-                    <el-table-column property="id" label="编号" width="110" align="center" />
-                    <el-table-column property="name" label="名称" align="center" />
-                    <el-table-column property="age" label="年龄" width="120" align="center" />
-                    <el-table-column property="depart" label="部门" width="170" align="center" />
-                    <el-table-column property="role" label="职位" width="170" align="center" />
-
-                    <el-table-column property="salary" label="薪水" width="120" align="center" />
-                    <el-table-column property="telphone" label="电话" width="170" align="center" />
+                    <el-table-column property="food_id" label="编号" width="110" align="center" />
+                    <el-table-column label="商品图片" align="center">
+                        <template #default="scope">
+                            <img style="height: 100px;width:auto;
+                            display: inline-block;align-self: center;" :src="IMG_PREFIX + scope.row.food_avatar">
+                        </template>
+                    </el-table-column>
+                    <el-table-column property="food_name" label="名称" align="center" />
+                    <el-table-column property="food_type" label="类型" width="120" align="center" />
+                    <el-table-column property="food_price" label="价格" width="170" align="center" />
+                    <el-table-column property="food_dealamount" label="交易量" width="170" align="center" />
+                    <el-table-column property="food_memo" label="备注" width="120" align="center" />
                     <el-table-column label="操作" width="180" align="center">
                         <template #default="scope">
                             <el-button size="default" @click="handleUpdate(scope.$index, scope.row)">编辑
@@ -74,54 +51,50 @@
             </el-button>
         </div>
         <div class="pagination-container">
-            <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                layout="total, sizes,prev, pager, next,jumper" :page-size="listQuery.limit" :page-sizes="[5, 10, 15]"
-                :current-page.sync="listQuery.page" :total="list.total">
+            <el-pagination background layout="total, sizes,prev, pager, next,jumper" v-model:page-size="list.limit"
+                :page-sizes="[5, 10, 15]" v-model:current-page="list.page" :total="list.total">
             </el-pagination>
         </div>
     </div>
 </template>
 <script lang="ts" setup >
-import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestGetStaffList, requestGetDepartList, requestGetRoleList } from '@/api/company';
+import { requestDeleteFood, requestGetFoodList } from '@/api/food';
+import { ElMessage } from 'element-plus';
 const { t } = useI18n()
+const IMG_PREFIX = 'http://dev.api.yurzi.top:11451'
 const operates: Operate[] = [
     {
-        label: "用户员工",
-        value: "delUser"
+        label: "删除食品",
+        value: "delFood"
     }
 ]
-const operateType = ref("delUser")
-const defaultListQuery = {
-    limit: 5,
-    page: 1,
-    s_name: "",
-    s_level: 0
-};
-const listQuery = ref(JSON.parse(JSON.stringify(defaultListQuery)))
-const VIPOptions = [{ level: 0, name: 'All' }, { level: 1, name: 'VIP 1' }, { level: 2, name: 'VIP 2' }, { level: 3, name: 'VIP 3' }, { level: 4, name: 'VIP 4' }, { level: 5, name: 'VIP 5' }, { level: 6, name: 'VIP 6' }, { level: 7, name: 'VIP 7' }]
+const operateType = ref("delFood")
 
 const list = ref({
     listLoading: false,
     data: [],
     total: 0,
     totalPage: 0,
-    pageSize: 0,
+    limit: 10,
+    page: 1
+})
+const displayList = computed(() => {
+    return list.value.data.slice(
+        list.value.limit * (list.value.page - 1),
+        list.value.limit * list.value.page)
 })
 let multipleSelection: any[] = []
 const router = useRouter()
-const route = useRoute()
 
-async function getUserList() {
+
+async function getFoodList() {
     try {
         list.value.listLoading = true;
-        const { data } = await requestGetStaffList(listQuery.value)
-        console.log("booklist", data);
+        const { data } = await requestGetFoodList()
         list.value.listLoading = false
-        list.value.data = data.record
-        list.value.total = data.total
-        list.value.totalPage = Math.floor(data.total / listQuery.value.limit) + 1
-        list.value.pageSize = listQuery.value.limit
+        list.value.data = data.list
+        list.value.total = data.list.length
+        list.value.totalPage = Math.floor(list.value.total / list.value.limit) + 1
     } catch (error) {
         ElMessage({
             type: "error",
@@ -129,52 +102,37 @@ async function getUserList() {
         })
     }
 }
-
-
-
 function handleSelectionChange(val: any[]) {
     multipleSelection = val;
 }
 
-function handleResetSearch() {
-    listQuery.value = defaultListQuery
+function handleCreate() {
+    router.push({ path: '/food/createFood' })
 }
 
 function handleUpdate(index: number, row: any) {
-    router.push({ path: "/product/updateBook", query: { id: row.id } })
+    router.push({ path: '/food/updateFood', query: { id: row.food_id } })
 }
 
-function handleDelete(index: number, row: any) {
-    // deleteBrand(row.id).then(response => {
-    //     ElMessage({
-    //         message: '删除成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    //     getList();
-    // });
-    ElMessage({
-        message: '删除成功',
-        type: 'success',
-        duration: 1000
-    });
+async function handleDelete(index: number, row: any) {
+    const { data } = await requestDeleteFood({ id: row.food_id })
+    if (data.code >= 200 && data.code < 300) {
+        ElMessage({
+            message: data.message,
+            type: 'success',
+            duration: 1000
+        });
+        getFoodList()
+    } else {
+        ElMessage({
+            message: data.message,
+            type: 'error',
+            duration: 1000
+        });
+    }
 }
 
-function handleSizeChange(val: number) {
-    listQuery.value.page = 1;
-    listQuery.value.limit = val;
-    getUserList();
-}
-function handleCurrentChange(val: number) {
-    listQuery.value.page = val;
-    getUserList();
-}
-function searchDepartments() {
-    listQuery.value.page = 1;
-    getUserList();
-}
 function handleBatchOperate() {
-    console.log(multipleSelection);
     if (multipleSelection.length < 1) {
         ElMessage({
             message: '请选择一条记录',
@@ -183,11 +141,10 @@ function handleBatchOperate() {
         });
         return;
     }
-    let showStatus = 0;
-    if (operateType.value === 'showBrand') {
-        showStatus = 1;
-    } else if (operateType.value === 'hideBrand') {
-        showStatus = 0;
+    if (operateType.value === 'delFood') {
+        for (let i = 0; i < multipleSelection.length; i++) {
+            handleDelete(0, { id: multipleSelection[i].food_id });
+        }
     } else {
         ElMessage({
             message: '请选择批量操作类型',
@@ -196,27 +153,9 @@ function handleBatchOperate() {
         });
         return;
     }
-    let ids = [];
-    for (let i = 0; i < multipleSelection.length; i++) {
-        ids.push(multipleSelection[i].id);
-    }
-    let data = new URLSearchParams();
-    // data.append("ids", ids);
-    // data.append("showStatus", showStatus);
-    // updateShowStatus(data).then(response => {
-    //     getList();
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // });
 }
 
-if (route.query.s_pressName) {
-    listQuery.value.s_pressName = String(route.query.s_pressName)
-}
-getUserList()
+getFoodList()
 
 
 </script>
