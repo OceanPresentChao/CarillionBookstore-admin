@@ -35,12 +35,9 @@
             <el-form-item label="商品库存：">
                 <el-input v-model="modelValue.stock"></el-input>
             </el-form-item>
-            <el-form-item label="属性图片：">
-                <el-card shadow="never" class="cardBg">
-                    <single-upload v-model="modelValue.pic"
-                        style="width: 300px;display: inline-block;margin-left: 10px">
-                    </single-upload>
-                </el-card>
+            <el-form-item label="属性图片：" class="pb-4">
+                <single-upload v-model="modelValue.pic" style="display: inline-block;margin-left: 10px">
+                </single-upload>
             </el-form-item>
             <el-form-item label="是否上架:">
                 <el-switch v-model="modelValue.isShow"></el-switch>

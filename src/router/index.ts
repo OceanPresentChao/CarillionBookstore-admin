@@ -89,7 +89,7 @@ export const menuRoutes: Array<RouteRecordRaw> = [
         component: Layout,
         name: "sale",
         meta: {
-            title: "销售管理",
+            title: "业务管理",
             icon: "iconoir:home-sale",
             roles: ["sys:goods"],
             parentId: 0,

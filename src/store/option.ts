@@ -8,7 +8,7 @@ import { Types } from './type'
 
 interface BookCategoryOption {
     id: number
-    name: string
+    title: string
 }
 
 
@@ -24,6 +24,11 @@ interface RoleOption {
     depart: number
 }
 
+interface publishStatusOption {
+    id: number
+    name: string
+}
+
 
 export const useOptionStore = defineStore({
     id: Types.OPTION,
@@ -31,8 +36,9 @@ export const useOptionStore = defineStore({
         const bookCateOptions: BookCategoryOption[] = []
         const departmentOptions: DepartmentOption[] = []
         const roleOptions: RoleOption[] = []
+        const publishStatusOptions: publishStatusOption[] = []
         return {
-            bookCateOptions, departmentOptions, roleOptions
+            bookCateOptions, departmentOptions, roleOptions, publishStatusOptions
         }
     },
     getters: {
@@ -71,6 +77,9 @@ export const useOptionStore = defineStore({
                     message: String(error)
                 })
             }
+        },
+        getPublishStatusOptions() {
+            this.publishStatusOptions = [{ id: 0, name: '未上架' }, { id: 1, name: '已上架' }]
         },
         getDepartIdFromRoleId(roleId: number): number {
             let res = 0

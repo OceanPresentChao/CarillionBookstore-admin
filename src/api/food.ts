@@ -1,19 +1,17 @@
 import request from '@/utils/request';
 
-export function requestGetUserList(params: {
+export function requestGetFoodList(params: {
     limit: number,
     page: number,
-    s_name?: string,
-    s_level?: number
 }) {
     return request({
-        url: `/realApi/v1/vip/info/`,
+        url: `/realApi/v1/food/list/`,
         method: 'GET',
         params
     })
 }
 
-export function requestCreateUser(body: {
+export function requestCreateFood(body: {
     name: string,
     password: string,
     email: string,
@@ -25,7 +23,7 @@ export function requestCreateUser(body: {
     })
 }
 
-export function requestUpdateUser(body: {
+export function requestUpdateFood(body: {
     id: number,
     password: string,
     mail: string,
@@ -38,7 +36,7 @@ export function requestUpdateUser(body: {
     })
 }
 
-export function requestDeleteUser(params: {
+export function requestDeleteFood(params: {
     id: number,
 }) {
     return request({
@@ -48,20 +46,3 @@ export function requestDeleteUser(params: {
     })
 }
 
-export function requestChargeUser(body: {
-    id: number,
-    money: number
-}) {
-    return request({
-        url: `/realApi/v1/vip/recharge/`,
-        method: 'POST',
-        data: body
-    })
-}
-
-export function requestGetUserReview() {
-    return request({
-        url: '/mockApi/v1/vip/review/',
-        method: 'GET',
-    })
-}

@@ -82,19 +82,17 @@
             <el-row :gutter="20">
                 <el-col :span="12">
                     <div class="out-border">
-                        <div class="layout-title">商品总览</div>
+                        <div class="layout-title">图书总览</div>
                         <div style="padding: 40px">
                             <el-row>
-                                <el-col :span="6" class="color-danger overview-item-value">100</el-col>
-                                <el-col :span="6" class="color-danger overview-item-value">400</el-col>
-                                <el-col :span="6" class="color-danger overview-item-value">50</el-col>
-                                <el-col :span="6" class="color-danger overview-item-value">500</el-col>
+                                <el-col :span="8" class="color-danger overview-item-value">100</el-col>
+                                <el-col :span="8" class="color-danger overview-item-value">400</el-col>
+                                <el-col :span="8" class="color-danger overview-item-value">50</el-col>
                             </el-row>
                             <el-row class="font-medium">
-                                <el-col :span="6" class="overview-item-title">已下架</el-col>
-                                <el-col :span="6" class="overview-item-title">已上架</el-col>
-                                <el-col :span="6" class="overview-item-title">库存紧张</el-col>
-                                <el-col :span="6" class="overview-item-title">全部商品</el-col>
+                                <el-col :span="8" class="overview-item-title">已下架</el-col>
+                                <el-col :span="8" class="overview-item-title">已上架</el-col>
+                                <el-col :span="8" class="overview-item-title">全部图书</el-col>
                             </el-row>
                         </div>
                     </div>

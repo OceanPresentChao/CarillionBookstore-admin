@@ -19,8 +19,10 @@
                     </el-form-item>
                     <el-form-item label="图书分类：">
                         <el-select v-model="listQuery.s_categoryIds" multiple placeholder="Select" style="width: 240px">
-                            <el-option v-for="item in optionStore.bookCateOptions" :key="item.id" :label="item.name"
+                            <el-option v-for="item in optionStore.bookCateOptions" :key="item.id" :label="item.title"
                                 :value="item.id" />
+                            <el-option :key="-1" label="ALL" :value="-1">
+                            </el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="图书出版社：">
@@ -28,10 +30,11 @@
                         </el-input>
                     </el-form-item>
                     <el-form-item label="上架状态：">
-                        <el-select v-model="listQuery.s_status" placeholder="全部" clearable>
-                            <el-option v-for="item in publishStatusOptions" :key="item.value" :label="item.label"
-                                :value="item.id">
+                        <el-select v-model="listQuery.s_status" clearable>
+                            <el-option v-for="item in optionStore.publishStatusOptions" :key="item.id"
+                                :label="item.name" :value="item.id">
                             </el-option>
+                            <el-option :key="-1" label="ALL" :value="-1"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-form>
@@ -103,8 +106,9 @@
 </template>
 <script lang="ts" setup >
 import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestGetBookList } from '@/api/product';
+import { requestDeleteBook, requestGetBookList } from '@/api/product';
 import { useOptionStore } from "@/store/option"
+import _ from 'lodash';
 const optionStore = useOptionStore()
 const operates: Operate[] = [
     {
@@ -122,23 +126,14 @@ const operates: Operate[] = [
 ]
 const operateType = ref("showBook")
 const defaultListQuery = {
-    s_name: "",
     limit: 5,
     page: 1,
-    s_categoryIds: [] as any[],
+    s_name: "",
+    s_categoryIds: [1, 2] as number[],
     s_pressName: '',
     s_status: 0,
 };
-const listQuery = ref({
-    s_name: "",
-    limit: 5,
-    page: 1,
-    s_categoryIds: [] as any[],
-    s_pressName: '',
-    s_status: 0,
-})
-
-const publishStatusOptions = ref<any[]>([])
+const listQuery = ref<typeof defaultListQuery>(JSON.parse(JSON.stringify(defaultListQuery)))
 const list = ref({
     listLoading: false,
     data: [],
@@ -153,8 +148,7 @@ const route = useRoute()
 async function getBookList() {
     try {
         list.value.listLoading = true;
-        const { data } = await requestGetBookList(listQuery.value)
-        console.log("booklist", data);
+        const { data } = await requestGetBookList(_.assign(listQuery.value, { s_categoryIds: listQuery.value.s_categoryIds.join(',') }))
         list.value.listLoading = false
         list.value.data = data.record
         list.value.total = data.total
@@ -181,20 +175,22 @@ function handleUpdate(index: number, row: any) {
     router.push({ path: "/product/updateBook", query: { id: row.id } })
 }
 
-function handleDelete(index: number, row: any) {
-    // deleteBrand(row.id).then(response => {
-    //     ElMessage({
-    //         message: '删除成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    //     getList();
-    // });
-    ElMessage({
-        message: '删除成功',
-        type: 'success',
-        duration: 1000
-    });
+async function handleDelete(index: number, row: any) {
+    const { data } = await requestDeleteBook({ id: row.id! })
+    if (data.code >= 200 && data.code < 300) {
+        ElMessage({
+            message: data.message,
+            type: 'success',
+            duration: 1000
+        });
+        getBookList()
+    } else {
+        ElMessage({
+            message: data.message,
+            type: 'error',
+            duration: 1000
+        });
+    }
 }
 
 function handleShowStatusChange(index: number, row: any) {
@@ -244,11 +240,13 @@ function handleBatchOperate() {
         });
         return;
     }
-    let showStatus = 0;
-    if (operateType.value === 'showBrand') {
-        showStatus = 1;
-    } else if (operateType.value === 'hideBrand') {
-        showStatus = 0;
+
+    if (operateType.value === 'showBook') {
+
+    } else if (operateType.value === 'hideBook') {
+
+    } else if (operateType.value === 'delBook') {
+
     } else {
         ElMessage({
             message: '请选择批量操作类型',
@@ -261,24 +259,16 @@ function handleBatchOperate() {
     for (let i = 0; i < multipleSelection.length; i++) {
         ids.push(multipleSelection[i].id);
     }
-    let data = new URLSearchParams();
-    // data.append("ids", ids);
-    // data.append("showStatus", showStatus);
-    // updateShowStatus(data).then(response => {
-    //     getList();
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // });
+
 }
 
 if (route.query.s_pressName) {
     listQuery.value.s_pressName = String(route.query.s_pressName)
 }
-getBookList()
+
 optionStore.getBookCateOptions()
+optionStore.getPublishStatusOptions()
+getBookList()
 
 
 </script>

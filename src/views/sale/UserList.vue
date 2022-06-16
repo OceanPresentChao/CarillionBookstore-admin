@@ -48,9 +48,11 @@
                         :formatter="transformDate" />
                     <el-table-column property="createDate" label="创建日期" width="170" align="center"
                         :formatter="transformDate" />
-                    <el-table-column label="操作" width="180" align="center">
+                    <el-table-column label="操作" width="240" align="center">
                         <template #default="scope">
                             <el-button size="default" @click="handleUpdate(scope.$index, scope.row)">编辑
+                            </el-button>
+                            <el-button size="default" type="primary" @click="handleCharge(scope.$index, scope.row)">充值
                             </el-button>
                             <el-popconfirm title="Are you sure to delete this?"
                                 @confirm="handleDelete(scope.$index, scope.row)">
@@ -85,9 +87,10 @@
     </div>
 </template>
 <script lang="ts" setup >
-import { ElMessage } from 'element-plus';
-import { requestGetUserList, requestDeleteUser, requestUpdateUser, requestCreateUser } from '@/api/user';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { requestGetUserList, requestDeleteUser, requestUpdateUser, requestCreateUser, requestChargeUser } from '@/api/user';
 import _ from "lodash"
+
 const { t } = useI18n()
 const operates: Operate[] = [
     {
@@ -127,8 +130,6 @@ const defaultUserParam = {
 }
 const userParam = ref<typeof defaultUserParam>(JSON.parse(JSON.stringify(defaultUserParam)))
 let multipleSelection: any[] = []
-const router = useRouter()
-const route = useRoute()
 
 async function getUserList() {
     try {
@@ -216,6 +217,37 @@ async function handleSubmit() {
     dialogProps.value.isShow = false
 }
 
+function handleCharge(index: number, row: any) {
+    ElMessageBox.prompt('请填写充值金额', '充值', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        inputPattern:
+            /[\d]+/,
+        inputErrorMessage: '不合法数额',
+    })
+        .then(async ({ value }) => {
+            const { data } = await requestChargeUser({ id: row.id, money: Number(value) })
+            if (data.code >= 200 && data.code < 300) {
+                ElMessage({
+                    type: 'success',
+                    message: `充值成功！金额为：${value}`,
+                })
+                getUserList()
+            } else {
+                ElMessage({
+                    type: 'error',
+                    message: data.messgae,
+                })
+            }
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '充值取消',
+            })
+        })
+}
+
 function handleSizeChange(val: number) {
     listQuery.value.page = 1;
     listQuery.value.limit = val;
@@ -239,11 +271,10 @@ function handleBatchOperate() {
         });
         return;
     }
-    let showStatus = 0;
-    if (operateType.value === 'showBrand') {
-        showStatus = 1;
-    } else if (operateType.value === 'hideBrand') {
-        showStatus = 0;
+    if (operateType.value === 'delUser') {
+        for (let i = 0; i < multipleSelection.length; i++) {
+            handleDelete(1, { id: multipleSelection[i].id })
+        }
     } else {
         ElMessage({
             message: '请选择批量操作类型',
@@ -252,21 +283,6 @@ function handleBatchOperate() {
         });
         return;
     }
-    let ids = [];
-    for (let i = 0; i < multipleSelection.length; i++) {
-        ids.push(multipleSelection[i].id);
-    }
-    let data = new URLSearchParams();
-    // data.append("ids", ids);
-    // data.append("showStatus", showStatus);
-    // updateShowStatus(data).then(response => {
-    //     getList();
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // });
 }
 function transformDate(row: any, column: any, cellValue: string, index: number) {
     return new Date(Number(cellValue) * 1000).toDateString()

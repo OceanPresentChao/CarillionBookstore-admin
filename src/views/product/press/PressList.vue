@@ -11,7 +11,7 @@
             <div style="margin-top: 15px">
                 <el-form :inline="true" :model="listQuery" size="default" label-width="140px">
                     <el-form-item label="输入搜索：">
-                        <el-input style="width: 203px" v-model="listQuery.keyword" placeholder="出版社名称/关键字"
+                        <el-input style="width: 203px" v-model="listQuery.s_name" placeholder="出版社名称/关键字"
                             @keydown.enter="searchBrandList"></el-input>
                     </el-form-item>
                 </el-form>
@@ -20,7 +20,7 @@
         <el-card class="operate-container" shadow="never">
             <Icon icon="bi:card-list" class="titleIcon"></Icon>
             <span>数据列表</span>
-            <el-button class="btn-add" @click="" size="default">
+            <el-button class="btn-add" @click="handleCreate">
                 添加
             </el-button>
         </el-card>
@@ -33,8 +33,6 @@
 
                     <el-table-column property="name" label="出版社名称" align="center" />
 
-                    <el-table-column property="firstLetter" label="出版社首字母" width="100" align="center" />
-
                     <el-table-column label="是否显示" width="100" align="center">
                         <template #default="scope">
                             <el-switch @change="handleShowStatusChange(scope.$index, scope.row)" :active-value="1"
@@ -44,8 +42,9 @@
                     </el-table-column>
                     <el-table-column label="相关" width="220" align="center">
                         <template #default="scope">
-                            <span>商品：</span>
-                            <el-button type="primary" size="default" text @click="">
+                            <span>图书数：</span>
+                            <el-button type="primary" size="default" text
+                                @click="router.push({ path: '/product/book', query: { s_pressName: scope.row.name } })">
                                 {{ scope.row.bookNum }}
                             </el-button>
                         </template>
@@ -91,28 +90,33 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogProps.visible = false">取 消</el-button>
-                <el-button type="primary" @click="">确 定</el-button>
+                <el-button type="primary" @click="dialogProps.handleConfirm">确 定</el-button>
             </span>
         </el-dialog>
     </div>
 </template>
 <script lang="ts" setup >
 import { ElMessage } from 'element-plus';
-import { requestGetPressList } from '@/api/product';
+import { requestCreatePress, requestDeletePress, requestGetPressList, requestUpdatePress, requestUpdatePressShow } from '@/api/product';
 const { t } = useI18n()
+const router = useRouter()
 const operates: Operate[] = [
     {
-        label: "显示品牌",
+        label: "显示出版社",
         value: "showBrand"
     },
     {
-        label: "隐藏品牌",
+        label: "隐藏出版社",
         value: "hideBrand"
+    },
+    {
+        label: "删除出版社",
+        value: "delBrand"
     }
 ]
 const operateType = ref("showBrand")
 const listQuery = ref({
-    keyword: "",
+    s_name: "",
     limit: 10,
     page: 1
 })
@@ -128,9 +132,10 @@ const pressFormRef = ref()
 const dialogProps = ref({
     title: '',
     visible: false,
+    isEdit: false,
     rules: {
         name: [
-            { required: true, message: '请输入类型名称', trigger: 'blur' }
+            { required: true, message: '请输入出版社名称', trigger: 'blur' }
         ]
     },
     pressProps: {
@@ -138,64 +143,43 @@ const dialogProps = ref({
         id: -1
     },
     handleClose(done: () => void) {
-        if (!dialogProps.value.visible && pressFormRef.value) {
-            pressFormRef.value.clearValidate()
-        }
         done()
     },
     handleConfirm() {
-        pressFormRef.value.validate((valid: boolean) => {
+        pressFormRef.value.validate(async (valid: boolean) => {
             if (valid) {
-                let data = new URLSearchParams();
-                data.append("name", dialogProps.value.pressProps.name);
-                if (dialogProps.value.title === "添加类型") {
-                    // createProductAttrCate(data).then(response => {
-                    //     ElMessage({
-                    //         message: '添加成功',
-                    //         type: 'success',
-                    //         duration: 1000
-                    //     });
-                    //     dialogProps.value.visible = false;
-                    //     getList();
-                    // });
-                    ElMessage({
-                        message: '添加成功',
-                        type: 'success',
-                        duration: 1000
-                    });
-                    dialogProps.value.visible = false;
+                let res: any = ''
+                if (dialogProps.value.isEdit) {
+                    const { data } = await requestUpdatePress(dialogProps.value.pressProps)
+                    res = data
                 } else {
-                    // updateProductAttrCate(dialogProps.value.pressProps.id, data).then(response => {
-                    //     ElMessage({
-                    //         message: '修改成功',
-                    //         type: 'success',
-                    //         duration: 1000
-                    //     });
-                    //     dialogProps.value.visible = false;
-                    //     getList();
-                    // });
-                    ElMessage({
-                        message: '修改成功',
-                        type: 'success',
-                        duration: 1000
-                    });
-                    dialogProps.value.visible = false;
+                    const { data } = await requestCreatePress(dialogProps.value.pressProps)
+                    res = data
                 }
+                if (res.code >= 200 && res.code < 300) {
+                    getPressList()
+                    ElMessage({
+                        type: "success",
+                        message: res.message
+                    })
+                    getPressList()
+                } else {
+                    ElMessage({
+                        type: "error",
+                        message: res.message
+                    })
+                }
+                dialogProps.value.visible = false
             } else {
-                console.log('error submit!!');
-                return false;
             }
         });
     }
 })
-getList()
 
-
-async function getList() {
+async function getPressList() {
     try {
         list.value.listLoading = true;
         const { data } = await requestGetPressList(listQuery.value)
-        console.log(data);
         list.value.listLoading = false
         list.value.data = data.record
         list.value.total = data.total
@@ -213,68 +197,70 @@ function handleSelectionChange(val: any[]) {
     multipleSelection = val;
 }
 
+function handleCreate() {
+    dialogProps.value.visible = true;
+    dialogProps.value.isEdit = false;
+    dialogProps.value.title = "新建出版社";
+    dialogProps.value.pressProps.name = '';
+}
+
 function handleUpdate(index: number, row: any) {
     dialogProps.value.visible = true;
-    dialogProps.value.title = "编辑类型";
+    dialogProps.value.isEdit = true;
+    dialogProps.value.title = "编辑出版社";
     dialogProps.value.pressProps.name = row.name;
     dialogProps.value.pressProps.id = row.id;
 }
 
-function handleDelete(index: number, row: any) {
-    // deleteBrand(row.id).then(response => {
-    //     ElMessage({
-    //         message: '删除成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    //     getList();
-    // });
-    ElMessage({
-        message: '删除成功',
-        type: 'success',
-        duration: 1000
-    });
+async function handleDelete(index: number, row: any) {
+    const { data } = await requestDeletePress({ id: row.id! })
+    if (data.code >= 200 && data.code < 300) {
+        ElMessage({
+            message: data.message,
+            type: 'success',
+            duration: 1000
+        });
+        getPressList()
+    } else {
+        ElMessage({
+            message: data.message,
+            type: 'error',
+            duration: 1000
+        });
+    }
 }
 
-function handleShowStatusChange(index: number, row: any) {
-    let data = new URLSearchParams();
-    ;
-    data.append("ids", row.id);
-    data.append("showStatus", row.showStatus);
-    // updateShowStatus(data).then(response => {
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // }).catch(error => {
-    //     if (row.showStatus === 0) {
-    //         row.showStatus = 1;
-    //     } else {
-    //         row.showStatus = 0;
-    //     }
-    // });
-    // ElMessage({
-    //     message: '修改成功',
-    //     type: 'success',
-    //     duration: 1000
-    // });
+async function handleShowStatusChange(index: number, row: any) {
+    const { data } = await requestUpdatePressShow({ id: row.id, show: row.show })
+    if (data.code >= 200 && data.code < 300) {
+        ElMessage({
+            message: data.message,
+            type: 'success',
+            duration: 1000
+        });
+        getPressList()
+    } else {
+        ElMessage({
+            message: data.message,
+            type: 'error',
+            duration: 1000
+        });
+    }
 }
 function handleSizeChange(val: number) {
     listQuery.value.page = 1;
     listQuery.value.limit = val;
-    getList();
+    getPressList();
 }
 function handleCurrentChange(val: number) {
     listQuery.value.page = val;
-    getList();
+    getPressList();
 }
 function searchBrandList() {
     listQuery.value.page = 1;
-    getList();
+    getPressList();
 }
 function handleBatchOperate() {
-    console.log(multipleSelection);
     if (multipleSelection.length < 1) {
         ElMessage({
             message: '请选择一条记录',
@@ -288,31 +274,25 @@ function handleBatchOperate() {
         showStatus = 1;
     } else if (operateType.value === 'hideBrand') {
         showStatus = 0;
+    } else if (operateType.value === 'delBrand') {
+        for (let i = 0; i < multipleSelection.length; i++) {
+            handleDelete(0, { id: multipleSelection[i].id })
+        }
+        return
     } else {
         ElMessage({
             message: '请选择批量操作类型',
             type: 'warning',
             duration: 1000
-        });
-        return;
+        })
+        return
     }
-    let ids = [];
     for (let i = 0; i < multipleSelection.length; i++) {
-        ids.push(multipleSelection[i].id);
+        handleShowStatusChange(0, { id: multipleSelection[i].id, show: showStatus })
     }
-    let data = new URLSearchParams();
-    // data.append("ids", ids);
-    // data.append("showStatus", showStatus);
-    // updateShowStatus(data).then(response => {
-    //     getList();
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // });
 }
 
+getPressList()
 </script>
 <style scoped>
 </style>

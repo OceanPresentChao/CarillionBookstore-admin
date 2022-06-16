@@ -1,109 +1,40 @@
 <template>
     <div>
-        <el-upload :action="useOss ? ossUploadUrl : minioUploadUrl" :data="useOss ? dataObj : null" list-type="picture"
-            :file-list="fileList" :before-upload="beforeUpload" :on-remove="handleRemove" drag
-            :on-success="handleUploadSuccess" :on-preview="handlePreview">
-            <el-button type="primary">点击上传</el-button>
-            <div slot="tip">只能上传jpg/png文件，且不超过10MB</div>
+        <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" multiple
+            :file-list="fileList" :before-upload="beforeUpload" :on-preview="handlePictureCardPreview"
+            list-type="picture-card">
+            <Icon class="titleIcon" icon="carbon:fetch-upload-cloud"></Icon>
+            <div class="el-upload__text">
+                Drop file here or <em>click to upload</em>
+            </div>
+
         </el-upload>
         <el-dialog v-model="dialogVisible">
-            <img width="100%" :src="fileList[0].url" alt="">
+            <img w-full :src="dialogImageUrl" alt="Preview Image" />
         </el-dialog>
     </div>
 </template>
-<script>
-// import { policy } from '@/api/cos'
-export default {
-    name: 'singleUpload',
-    props: {
-        modelValue: String
-    },
-    computed: {
-        imageUrl() {
-            return this.modelValue;
-        },
-        imageName() {
-            if (this.modelValue != null && this.modelValue !== '') {
-                return this.value.substr(this.value.lastIndexOf("/") + 1);
-            } else {
-                return null;
-            }
-        },
-        fileList() {
-            return [{
-                name: this.imageName,
-                url: this.imageUrl
-            }]
-        },
-        showFileList: {
-            get: function () {
-                return this.modelValue !== null && this.modelValue !== '' && this.modelValue !== undefined;
-            },
-            set: function (newValue) {
-            }
-        }
-    },
-    data() {
-        return {
-            dataObj: {
-                policy: '',
-                signature: '',
-                key: '',
-                ossaccessKeyId: '',
-                dir: '',
-                host: '',
-                // callback:'',
-            },
-            dialogVisible: false,
-            // useOss: true, //使用oss->true;使用MinIO->false
-            // ossUploadUrl: 'http://macro-oss.oss-cn-shenzhen.aliyuncs.com',
-            // minioUploadUrl: 'http://localhost:8080/minio/upload',
-        };
-    },
-    methods: {
-        emitInput(val) {
-            this.$emit('input', val)
-        },
-        handleRemove(file, fileList) {
-            this.emitInput('');
-        },
-        handlePreview(file) {
-            this.dialogVisible = true;
-        },
-        beforeUpload(file) {
-            let _self = this;
-            if (!this.useOss) {
-                //不使用oss不需要获取策略
-                return true;
-            }
-            return new Promise((resolve, reject) => {
-                policy().then(response => {
-                    _self.dataObj.policy = response.data.policy;
-                    _self.dataObj.signature = response.data.signature;
-                    _self.dataObj.ossaccessKeyId = response.data.accessKeyId;
-                    _self.dataObj.key = response.data.dir + '/${filename}';
-                    _self.dataObj.dir = response.data.dir;
-                    _self.dataObj.host = response.data.host;
-                    // _self.dataObj.callback = response.data.callback;
-                    resolve(true)
-                }).catch(err => {
-                    console.log(err)
-                    reject(false)
-                })
-            })
-        },
-        handleUploadSuccess(res, file) {
-            this.showFileList = true;
-            this.fileList.pop();
-            let url = this.dataObj.host + '/' + this.dataObj.dir + '/' + file.name;
-            if (!this.useOss) {
-                //不使用oss直接获取图片路径
-                url = res.data.url;
-            }
-            this.fileList.push({ name: file.name, url: url });
-            this.emitInput(this.fileList[0].url);
-        }
+<script lang="ts" setup>
+import { ElMessage, type UploadProps, type UploadUserFile } from 'element-plus';
+
+const fileList = ref<UploadUserFile[]>([])
+const dialogImageUrl = ref('')
+const dialogVisible = ref(false)
+
+const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile: UploadUserFile) => {
+    dialogImageUrl.value = uploadFile.url!
+    dialogVisible.value = true
+}
+
+const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
+    if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png') {
+        ElMessage.error('Picture must be JPG or PNG format!')
+        return false
+    } else if (rawFile.size / 1024 / 1024 > 2) {
+        ElMessage.error('Avatar picture size can not exceed 2MB!')
+        return false
     }
+    return true
 }
 </script>
 <style>
