@@ -184,7 +184,7 @@ function handleCharge(index: number, row: any) {
             } else {
                 ElMessage({
                     type: 'error',
-                    message: data.messgae,
+                    message: data.message,
                 })
             }
         })
