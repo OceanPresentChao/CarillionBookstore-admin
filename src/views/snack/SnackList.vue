@@ -60,8 +60,8 @@
 <script lang="ts" setup >
 import { requestDeleteFood, requestGetFoodList } from '@/api/food';
 import { ElMessage } from 'element-plus';
+import { IMG_PREFIX } from "@/utils/constant"
 const { t } = useI18n()
-const IMG_PREFIX = 'http://dev.api.yurzi.top:11451'
 const operates: Operate[] = [
     {
         label: "删除食品",

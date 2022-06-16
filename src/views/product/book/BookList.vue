@@ -109,7 +109,7 @@ import { ElMessage, ExpandTrigger } from 'element-plus';
 import { requestDeleteBook, requestGetBookList, requestUpdateBookShow } from '@/api/product';
 import { useOptionStore } from "@/store/option"
 import _ from 'lodash';
-const IMG_PREFIX = 'http://dev.api.yurzi.top:11451'
+import { IMG_PREFIX } from "@/utils/constant"
 const optionStore = useOptionStore()
 const operates: Operate[] = [
     {
@@ -249,7 +249,7 @@ function handleBatchOperate() {
         return
     }
     for (let i = 0; i < multipleSelection.length; i++) {
-        handleShowStatusChange(0, { id: multipleSelection[i].id, show: showStatus })
+        handleShowStatusChange(0, { id: multipleSelection[i].id, isShow: showStatus })
     }
 
 }

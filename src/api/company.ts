@@ -45,3 +45,19 @@ export function requestDeleteStaff(params: { id: number }) {
         params
     })
 }
+
+export function requestPutSalary(body: { id: number, amount: number }) {
+    return request({
+        url: '/realApi/v1/company/deal/',
+        method: 'GET',
+        data: body
+    })
+}
+
+export function requestGetDealList(params: { limit: number, page: number, s_typeId: number, s_orderId: number }) {
+    return request({
+        url: '/realApi/v1/company/deal/',
+        method: 'GET',
+        params
+    })
+}

@@ -109,7 +109,7 @@ import { ElMessage } from 'element-plus';
 import { requestDeleteBook, requestGetShareBookList, requestUpdateBookShow } from '@/api/product';
 import { useOptionStore } from "@/store/option"
 import _ from 'lodash';
-const IMG_PREFIX = 'http://dev.api.yurzi.top:11451'
+import { IMG_PREFIX } from "@/utils/constant"
 const optionStore = useOptionStore()
 const operates: Operate[] = [
     {
@@ -220,10 +220,7 @@ function handleCurrentChange(val: number) {
     listQuery.value.page = val;
     getShareBookList();
 }
-function searchBrandList() {
-    listQuery.value.page = 1;
-    getShareBookList();
-}
+
 function handleBatchOperate() {
     if (multipleSelection.length < 1) {
         ElMessage({
@@ -252,7 +249,7 @@ function handleBatchOperate() {
         return
     }
     for (let i = 0; i < multipleSelection.length; i++) {
-        handleShowStatusChange(0, { id: multipleSelection[i].id, show: showStatus })
+        handleShowStatusChange(0, { id: multipleSelection[i].id, isShow: showStatus })
     }
 }
 

@@ -170,7 +170,7 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 name: "deal",
                 meta: {
                     title: "财务管理",
-                    icon: "carbon:order-details",
+                    icon: "ant-design:money-collect-outlined",
                     roles: ["sys:goodsCategory"],
                     parentId: 34,
                 },

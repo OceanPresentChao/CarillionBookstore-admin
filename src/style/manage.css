@@ -95,37 +95,37 @@ a:hover {
 /* //主标题 */
 .font-extra-large {
     font-size: 20px;
-    color: #303133;
+
 }
 
 /* //标题 */
 .font-title-large {
     font-size: 18px;
-    color: #303133;
+
 }
 
 /* //小标题 */
 .font-title-medium {
     font-size: 16px;
-    color: #303133;
+
 }
 
 /* //正文 */
 .font-medium {
     font-size: 16px;
-    color: #606266;
+
 }
 
 /* //正文 */
 .font-small {
     font-size: 14px;
-    color: #606266;
+
 }
 
 /* //正文（小） */
 .font-extra-small {
     font-size: 13px;
-    color: #606266;
+
 }
 
 .color-main {
@@ -146,12 +146,4 @@ a:hover {
 
 .color-info {
     color: #909399;
-}
-
-.titleIcon {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: rgb(24, 114, 204);
-    display: inline-block;
-    margin: 0 0.25rem;
 }

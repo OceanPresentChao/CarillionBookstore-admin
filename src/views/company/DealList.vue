@@ -2,45 +2,25 @@
     <div class="app-container">
         <el-card class="filter-container" shadow="never">
             <div>
-                <i class="el-icon-search"></i>
+                <Icon icon="carbon:search" class="titleIcon"></Icon>
                 <span>筛选搜索</span>
                 <el-button style="float: right" @click="searchBrandList" type="primary" size="default">
                     查询结果
-                </el-button>
-                <el-button style="float: right;margin-right: 15px" @click="handleResetSearch()" size="default">
-                    重置
                 </el-button>
             </div>
             <div style="margin-top: 15px">
                 <el-form :inline="true" :model="listQuery" size="default" label-width="140px">
                     <el-form-item label="输入搜索：">
-                        <el-input style="width: 203px" v-model="listQuery.s_name" placeholder="商品名称">
-                        </el-input>
-                    </el-form-item>
-                    <el-form-item label="图书分类：">
-                        <el-select v-model="listQuery.s_categoryIds" multiple placeholder="Select" style="width: 240px">
-                            <el-option v-for="item in categoryOptions" :key="item.id" :label="item.name"
-                                :value="item.id" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="图书出版社：">
-                        <el-input style="width: 203px" v-model="listQuery.s_pressName" placeholder="出版社名称">
-                        </el-input>
-                    </el-form-item>
-                    <el-form-item label="上架状态：">
-                        <el-select v-model="listQuery.s_status" placeholder="全部" clearable>
-                            <el-option v-for="item in publishStatusOptions" :key="item.value" :label="item.label"
-                                :value="item.id">
-                            </el-option>
-                        </el-select>
+                        <el-input style="width: 203px" v-model="listQuery.s_orderId" placeholder="出版社名称/关键字"
+                            @keydown.enter="searchBrandList"></el-input>
                     </el-form-item>
                 </el-form>
             </div>
         </el-card>
         <el-card class="operate-container" shadow="never">
-            <i class="el-icon-tickets"></i>
+            <Icon icon="bi:card-list" class="titleIcon"></Icon>
             <span>数据列表</span>
-            <el-button class="btn-add" @click="" size="default">
+            <el-button class="btn-add" @click="handleCreate">
                 添加
             </el-button>
         </el-card>
@@ -49,37 +29,12 @@
                 <el-table ref="brandTable" :data="list.data" style="width: 100%"
                     @selection-change="handleSelectionChange" v-loading="list.listLoading" border>
                     <el-table-column type="selection" width="60" align="center" />
-                    <el-table-column property="id" label="编号" width="100" align="center" />
-                    <el-table-column label="商品图片" align="center">
-                        <template #default="scope">
-                            <img style="height: 100px;width:auto;
-                            display: inline-block;align-self: center;" :src="scope.row.pic">
-                        </template>
-                    </el-table-column>
-                    <el-table-column property="name" label="图书名称" align="center" width="180" />
-                    <el-table-column property="pressName" label="出版社" width="160" align="center" />
-                    <el-table-column property="price" label="价格" width="110" align="center" />
-                    <el-table-column label="上架" width="120" align="center">
-                        <template #default="scope">
-                            <el-switch @change="handleShowStatusChange(scope.$index, scope.row)" :active-value="1"
-                                :inactive-value="0" v-model="scope.row.isShow">
-                            </el-switch>
-                        </template>
-                    </el-table-column>
-                    <el-table-column property="dealmount" label="销量" width="110" align="center" />
-                    <el-table-column label="操作" width="180" align="center">
-                        <template #default="scope">
-                            <el-button size="default" @click="handleUpdate(scope.$index, scope.row)">编辑
-                            </el-button>
-                            <el-popconfirm title="Are you sure to delete this?"
-                                @confirm="handleDelete(scope.$index, scope.row)">
-                                <template #reference>
-                                    <el-button size="default" type="danger">删除
-                                    </el-button>
-                                </template>
-                            </el-popconfirm>
-                        </template>
-                    </el-table-column>
+                    <el-table-column property="id" label="编号" width="160" align="center" />
+                    <el-table-column property="typeId" width="220" label="账单类型" align="center"
+                        :formatter="(row: any, column: any, cellValue: number, index: number) => { return ORDER_TYPE_MAP[cellValue] }" />
+                    <el-table-column property="orderId" width="200" label="订单id" align="center" />
+                    <el-table-column property="amount" width="220" label="账单消费" align="center" />
+                    <el-table-column property="date" label="账单日期" align="center" />
                 </el-table>
             </suspense>
         </div>
@@ -99,45 +54,49 @@
                 :current-page.sync="listQuery.page" :total="list.total">
             </el-pagination>
         </div>
+        <el-dialog :title="dialogProps.title" v-model="dialogProps.visible" :before-close="dialogProps.handleClose"
+            width="30%" append-to-body>
+            <el-form ref="pressFormRef" :model="dialogProps.pressProps" :rules="dialogProps.rules" label-width="120px">
+                <el-form-item label="出版社名称" prop="name">
+                    <el-input v-model="dialogProps.pressProps.name" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogProps.visible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogProps.handleConfirm">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script lang="ts" setup >
-import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestGetBookCategories, requestGetBookList } from '@/api/product';
+import { ElMessage } from 'element-plus';
+import { requestCreatePress, requestDeletePress, requestUpdatePress, } from '@/api/product';
+import { requestGetDealList } from '@/api/company';
+import { ORDER_TYPE_MAP } from "@/utils/constant"
 const { t } = useI18n()
+const router = useRouter()
 const operates: Operate[] = [
     {
-        label: "上架图书",
-        value: "showBook"
+        label: "显示出版社",
+        value: "showBrand"
     },
     {
-        label: "下架图书",
-        value: "hideBook"
+        label: "隐藏出版社",
+        value: "hideBrand"
     },
     {
-        label: "删除图书",
-        value: "delBook"
+        label: "删除出版社",
+        value: "delBrand"
     }
 ]
-const operateType = ref("showBook")
-const defaultListQuery = {
-    s_name: "",
-    limit: 5,
-    page: 1,
-    s_categoryIds: [] as any[],
-    s_pressName: '',
-    s_status: 0,
-};
+const operateType = ref("showBrand")
 const listQuery = ref({
-    s_name: "",
-    limit: 5,
+    limit: 10,
     page: 1,
-    s_categoryIds: [] as any[],
-    s_pressName: '',
-    s_status: 0,
+    s_orderId: -1,
+    s_typeId: -1,
 })
-const categoryOptions = ref<any[]>([])
-const publishStatusOptions = ref<any[]>([])
+
 const list = ref({
     listLoading: false,
     data: [],
@@ -146,14 +105,58 @@ const list = ref({
     pageSize: 0,
 })
 let multipleSelection: any[] = []
-const router = useRouter()
-const route = useRoute()
+const pressFormRef = ref()
+const dialogProps = ref({
+    title: '',
+    visible: false,
+    isEdit: false,
+    rules: {
+        name: [
+            { required: true, message: '请输入出版社名称', trigger: 'blur' }
+        ]
+    },
+    pressProps: {
+        name: '',
+        id: -1
+    },
+    handleClose(done: () => void) {
+        done()
+    },
+    handleConfirm() {
+        pressFormRef.value.validate(async (valid: boolean) => {
+            if (valid) {
+                let res: any = ''
+                if (dialogProps.value.isEdit) {
+                    const { data } = await requestUpdatePress(dialogProps.value.pressProps)
+                    res = data
+                } else {
+                    const { data } = await requestCreatePress(dialogProps.value.pressProps)
+                    res = data
+                }
+                if (res.code >= 200 && res.code < 300) {
+                    getDealList()
+                    ElMessage({
+                        type: "success",
+                        message: res.message
+                    })
+                    getDealList()
+                } else {
+                    ElMessage({
+                        type: "error",
+                        message: res.message
+                    })
+                }
+                dialogProps.value.visible = false
+            } else {
+            }
+        });
+    }
+})
 
-async function getBookList() {
+async function getDealList() {
     try {
         list.value.listLoading = true;
-        const { data } = await requestGetBookList(listQuery.value)
-        console.log("booklist", data);
+        const { data } = await requestGetDealList(listQuery.value)
         list.value.listLoading = false
         list.value.data = data.record
         list.value.total = data.total
@@ -165,134 +168,62 @@ async function getBookList() {
             message: String(error)
         })
     }
-}
 
-async function getCategories() {
-    try {
-        const { data } = await requestGetBookCategories()
-        categoryOptions.value = data.record
-        console.log("category", data);
-    } catch (error) {
-        ElMessage({
-            type: "error",
-            message: String(error)
-        })
-    }
 }
-
 function handleSelectionChange(val: any[]) {
     multipleSelection = val;
 }
 
-function handleResetSearch() {
-    listQuery.value.s_categoryIds = []
-    listQuery.value = defaultListQuery
+function handleCreate() {
+    dialogProps.value.visible = true;
+    dialogProps.value.isEdit = false;
+    dialogProps.value.title = "新建出版社";
+    dialogProps.value.pressProps.name = '';
 }
 
 function handleUpdate(index: number, row: any) {
-    router.push({ path: "/product/updateBook", query: { id: row.id } })
+    dialogProps.value.visible = true;
+    dialogProps.value.isEdit = true;
+    dialogProps.value.title = "编辑出版社";
+    dialogProps.value.pressProps.name = row.name;
+    dialogProps.value.pressProps.id = row.id;
 }
 
-function handleDelete(index: number, row: any) {
-    // deleteBrand(row.id).then(response => {
-    //     ElMessage({
-    //         message: '删除成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    //     getList();
-    // });
-    ElMessage({
-        message: '删除成功',
-        type: 'success',
-        duration: 1000
-    });
+async function handleDelete(index: number, row: any) {
+    const { data } = await requestDeletePress({ id: row.id! })
+    if (data.code >= 200 && data.code < 300) {
+        ElMessage({
+            message: data.message,
+            type: 'success',
+            duration: 1000
+        });
+        getDealList()
+    } else {
+        ElMessage({
+            message: data.message,
+            type: 'error',
+            duration: 1000
+        });
+    }
 }
 
-function handleShowStatusChange(index: number, row: any) {
-    let data = new URLSearchParams();
-    ;
-    data.append("ids", row.id);
-    data.append("showStatus", row.showStatus);
-    // updateShowStatus(data).then(response => {
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // }).catch(error => {
-    //     if (row.showStatus === 0) {
-    //         row.showStatus = 1;
-    //     } else {
-    //         row.showStatus = 0;
-    //     }
-    // });
-    // ElMessage({
-    //     message: '修改成功',
-    //     type: 'success',
-    //     duration: 1000
-    // });
-}
+
 function handleSizeChange(val: number) {
     listQuery.value.page = 1;
     listQuery.value.limit = val;
-    getBookList();
+    getDealList();
 }
 function handleCurrentChange(val: number) {
     listQuery.value.page = val;
-    getBookList();
+    getDealList();
 }
 function searchBrandList() {
     listQuery.value.page = 1;
-    getBookList();
-}
-function handleBatchOperate() {
-    console.log(multipleSelection);
-    if (multipleSelection.length < 1) {
-        ElMessage({
-            message: '请选择一条记录',
-            type: 'warning',
-            duration: 1000
-        });
-        return;
-    }
-    let showStatus = 0;
-    if (operateType.value === 'showBrand') {
-        showStatus = 1;
-    } else if (operateType.value === 'hideBrand') {
-        showStatus = 0;
-    } else {
-        ElMessage({
-            message: '请选择批量操作类型',
-            type: 'warning',
-            duration: 1000
-        });
-        return;
-    }
-    let ids = [];
-    for (let i = 0; i < multipleSelection.length; i++) {
-        ids.push(multipleSelection[i].id);
-    }
-    let data = new URLSearchParams();
-    // data.append("ids", ids);
-    // data.append("showStatus", showStatus);
-    // updateShowStatus(data).then(response => {
-    //     getList();
-    //     ElMessage({
-    //         message: '修改成功',
-    //         type: 'success',
-    //         duration: 1000
-    //     });
-    // });
+    getDealList();
 }
 
-if (route.query.s_pressName) {
-    listQuery.value.s_pressName = String(route.query.s_pressName)
-}
-getBookList()
-getCategories()
 
-
+getDealList()
 </script>
 <style scoped>
 </style>

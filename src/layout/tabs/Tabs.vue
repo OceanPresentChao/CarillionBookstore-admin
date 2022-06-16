@@ -85,7 +85,7 @@ watch(() => route.path, () => {
     text-align: center !important;
     border: 1px solid #d8dce5 !important;
     margin: 0px 3px !important;
-    color: #495060;
+
     font-size: 0.8rem !important;
     padding: 0xp 1rem !important;
 }
@@ -102,7 +102,7 @@ watch(() => route.path, () => {
 }
 
 :deep(.el-tabs__item:hover) {
-    color: #495060 !important;
+    color: #3a9dc5 !important;
 }
 
 :deep(.is-active:hover) {
