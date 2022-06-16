@@ -67,6 +67,7 @@ declare module 'vue' {
     Playground: typeof import('./views/playground/Playground.vue')['default']
     PressList: typeof import('./views/product/press/PressList.vue')['default']
     SeatList: typeof import('./views/sale/SeatList.vue')['default']
+    ShareBookList: typeof import('./views/product/book/ShareBookList.vue')['default']
     SingleUpload: typeof import('./components/SingleUpload.vue')['default']
     SnackList: typeof import('./views/snack/SnackList.vue')['default']
     StaffDialog: typeof import('./views/company/StaffDialog.vue')['default']

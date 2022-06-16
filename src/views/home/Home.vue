@@ -56,21 +56,21 @@
                                 <div class="total-frame">
                                     <Icon class="total-icon" icon="ic:baseline-point-of-sale"></Icon>
                                     <div class="total-title">今日订单总数</div>
-                                    <div class="total-value">200</div>
+                                    <div class="total-value">12</div>
                                 </div>
                             </el-col>
                             <el-col :span="8">
                                 <div class="total-frame">
                                     <Icon class="total-icon" icon="carbon:money"></Icon>
                                     <div class="total-title">今日销售总额</div>
-                                    <div class="total-value">￥5000.00</div>
+                                    <div class="total-value">￥227</div>
                                 </div>
                             </el-col>
                             <el-col :span="8">
                                 <div class="total-frame">
                                     <Icon class="total-icon" icon="gridicons:product"></Icon>
                                     <div class="total-title">昨日销售总额</div>
-                                    <div class="total-value">￥5000.00</div>
+                                    <div class="total-value">￥4069</div>
                                 </div>
                             </el-col>
                         </el-row>
@@ -85,9 +85,12 @@
                         <div class="layout-title">图书总览</div>
                         <div style="padding: 40px">
                             <el-row>
-                                <el-col :span="8" class="color-danger overview-item-value">100</el-col>
-                                <el-col :span="8" class="color-danger overview-item-value">400</el-col>
-                                <el-col :span="8" class="color-danger overview-item-value">50</el-col>
+                                <el-col :span="8" class="color-danger overview-item-value">{{ bookReview.offSale }}
+                                </el-col>
+                                <el-col :span="8" class="color-danger overview-item-value">{{ bookReview.onSale }}
+                                </el-col>
+                                <el-col :span="8" class="color-danger overview-item-value">{{ bookReview.total }}
+                                </el-col>
                             </el-row>
                             <el-row class="font-medium">
                                 <el-col :span="8" class="overview-item-title">已下架</el-col>
@@ -102,10 +105,14 @@
                         <div class="layout-title">用户总览</div>
                         <div style="padding: 40px">
                             <el-row>
-                                <el-col :span="6" class="color-danger overview-item-value">100</el-col>
-                                <el-col :span="6" class="color-danger overview-item-value">200</el-col>
-                                <el-col :span="6" class="color-danger overview-item-value">1000</el-col>
-                                <el-col :span="6" class="color-danger overview-item-value">5000</el-col>
+                                <el-col :span="6" class="color-danger overview-item-value">{{ userReview.today }}
+                                </el-col>
+                                <el-col :span="6" class="color-danger overview-item-value">{{ userReview.yesterday }}
+                                </el-col>
+                                <el-col :span="6" class="color-danger overview-item-value">{{ userReview.month }}
+                                </el-col>
+                                <el-col :span="6" class="color-danger overview-item-value">{{ userReview.total }}
+                                </el-col>
                             </el-row>
                             <el-row class="font-medium">
                                 <el-col :span="6" class="overview-item-title">今日新增</el-col>
@@ -175,10 +182,25 @@
 import { requestSlogan } from "@/api/slogan"
 import { echarts } from "@/plugin/echart"
 import { useAuthStore } from "@/store/auth"
+import { requestGetBookReview } from "@/api/product"
+import { requestGetUserReview } from "@/api/user"
 const authStore = useAuthStore()
 const slogan = ref({ content: '', from: '' })
 const orderCountDate = ref('')
 const chartRef = ref<HTMLDivElement | null>(null)
+const bookReview = ref<Record<string, number>>({})
+const userReview = ref<Record<string, number>>({})
+async function getReview() {
+    try {
+        const { data: book } = await requestGetBookReview()
+        const { data: user } = await requestGetUserReview()
+        bookReview.value = book.result
+        userReview.value = user.result
+    } catch (error) {
+        console.warn(error);
+    }
+}
+
 async function getSlogan() {
     const { data } = await requestSlogan()
     slogan.value = { content: data.hitokoto, from: data.from }
@@ -253,7 +275,7 @@ onMounted(() => {
 })
 
 getSlogan()
-
+getReview()
 
 
 </script>

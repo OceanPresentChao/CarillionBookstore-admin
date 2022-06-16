@@ -38,6 +38,14 @@ export function requestDeletePress(params: { id: number }) {
     })
 }
 
+export function requestGetBook(params: { id: number }) {
+    return request({
+        url: '/realApi/v1/book/info/',
+        method: 'GET',
+        params
+    })
+}
+
 export function requestGetBookList(params: {
     limit: number,
     page: number,
@@ -48,6 +56,21 @@ export function requestGetBookList(params: {
 }) {
     return request({
         url: '/realApi/v1/book/list/',
+        method: 'GET',
+        params
+    })
+}
+
+export function requestGetShareBookList(params: {
+    limit: number,
+    page: number,
+    s_name?: string,
+    s_categoryIds?: string,
+    s_pressId?: number,
+    s_isShow?: boolean,
+}) {
+    return request({
+        url: '/realApi/v1/share/book/list/',
         method: 'GET',
         params
     })
@@ -73,5 +96,21 @@ export function requestDeleteBook(params: { id: number }) {
         url: '/realApi/v1/book/info/',
         method: 'DELETE',
         params
+    })
+}
+
+export function requestUpdateBookShow(body: { show: number, id: number }) {
+    return request({
+        url: '/realApi/v1/book/show/',
+        method: 'PUT',
+        data: body
+    })
+}
+
+export function requestCreateBook(body: { name: string, categoryId: number, pressId: number, author: string, desc: string, pubDate: string, version: number, page: number, price: number, isShow: number }) {
+    return request({
+        url: '/realApi/v1/book/info/',
+        method: 'POST',
+        data: body
     })
 }

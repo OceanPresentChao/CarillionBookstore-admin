@@ -38,8 +38,19 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 component: () => import("@/views/product/book/BookList.vue"),
                 name: "book",
                 meta: {
-                    title: "图书列表",
+                    title: "在售图书列表",
                     icon: "akar-icons:book",
+                    roles: ["sys:goodsCategory"],
+                    parentId: 34,
+                }
+            },
+            {
+                path: "/product/sharebook",
+                component: () => import("@/views/product/book/ShareBookList.vue"),
+                name: "sharebook",
+                meta: {
+                    title: "会员图书列表",
+                    icon: "ant-design:account-book-outlined",
                     roles: ["sys:goodsCategory"],
                     parentId: 34,
                 }

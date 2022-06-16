@@ -1,6 +1,6 @@
 
 import { requestGetDepartList, requestGetRoleList } from '@/api/company'
-import { requestGetBookCategories } from '@/api/product'
+import { requestGetBookCategories, requestGetPressList } from '@/api/product'
 import { ElMessage } from 'element-plus'
 import { defineStore } from 'pinia'
 
@@ -24,7 +24,12 @@ interface RoleOption {
     depart: number
 }
 
-interface publishStatusOption {
+interface PublishStatusOption {
+    id: number
+    name: string
+}
+
+interface PressOption {
     id: number
     name: string
 }
@@ -36,9 +41,10 @@ export const useOptionStore = defineStore({
         const bookCateOptions: BookCategoryOption[] = []
         const departmentOptions: DepartmentOption[] = []
         const roleOptions: RoleOption[] = []
-        const publishStatusOptions: publishStatusOption[] = []
+        const publishStatusOptions: PublishStatusOption[] = []
+        const pressOptions: PressOption[] = []
         return {
-            bookCateOptions, departmentOptions, roleOptions, publishStatusOptions
+            bookCateOptions, departmentOptions, roleOptions, publishStatusOptions, pressOptions
         }
     },
     getters: {
@@ -71,6 +77,17 @@ export const useOptionStore = defineStore({
             try {
                 const { data } = await requestGetBookCategories()
                 this.bookCateOptions = data.record
+            } catch (error) {
+                ElMessage({
+                    type: "error",
+                    message: String(error)
+                })
+            }
+        },
+        async getPressOptions() {
+            try {
+                const { data } = await requestGetPressList({ limit: 9999, page: 1, s_name: '' })
+                this.pressOptions = data.record
             } catch (error) {
                 ElMessage({
                     type: "error",

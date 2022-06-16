@@ -61,7 +61,7 @@ export function requestChargeUser(body: {
 
 export function requestGetUserReview() {
     return request({
-        url: '/mockApi/v1/vip/review/',
+        url: '/realApi/v1/vip/review/',
         method: 'GET',
     })
 }

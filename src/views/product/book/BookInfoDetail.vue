@@ -1,130 +1,106 @@
 <template>
     <div style="margin-top: 50px">
-        <el-form :model="modelValue" :rules="rules" ref="bookInfoForm" label-width="auto">
-            <el-form-item label="商品名称：" prop="name">
-                <el-input v-model="modelValue.name"></el-input>
+        <el-form :model="bookParam" ref="bookInfoForm" label-width="auto" status-icon>
+            <el-form-item label="商品名称：" prop="requiredProp">
+                <el-input v-model="bookParam.name">
+                </el-input>
             </el-form-item>
-            <el-form-item label="商品分类：" prop="productCategoryId">
-                <el-select v-model="modelValue.categoryId" placeholder="Select" style="width: 240px">
-                    <el-option v-for="item in categoryOptions" :key="item.id" :label="item.name" :value="item.id" />
+            <el-form-item label="商品分类：">
+                <el-select v-model="bookParam.categoryId" placeholder="Select" style="width: 240px">
+                    <el-option v-for="item in optionStore.bookCateOptions" :key="item.id" :label="item.title"
+                        :value="item.id" />
+                    <el-option :key="-1" label="请选择" :value="-1"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="图书作者：">
-                <el-input :autoSize="true" v-model="modelValue.desc" placeholder="请输入内容"></el-input>
+                <el-input :autoSize="true" v-model="bookParam.author" placeholder="请输入内容"></el-input>
             </el-form-item>
-            <el-form-item label="图书出版社：" prop="brandId">
-                <el-select v-model="modelValue.brandId" placeholder="请选择品牌">
-                    <el-option v-for="item in pressOptions" :key="item.id" :label="item.name" :value="item.id">
+            <el-form-item label="图书出版社：">
+                <el-select v-model="bookParam.pressId" placeholder="请选择出版社">
+                    <el-option v-for="item in optionStore.pressOptions" :key="item.id" :label="item.name"
+                        :value="item.id">
                     </el-option>
+                    <el-option :key="-1" label="请选择" :value="-1"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="图书简介：">
-                <el-input :autoSize="true" v-model="modelValue.description" type="textarea" placeholder="请输入内容">
+                <el-input :autoSize="true" v-model="bookParam.desc" type="textarea" placeholder="请输入内容">
                 </el-input>
             </el-form-item>
             <el-form-item label="图书出版日期：">
-                <el-date-picker v-model="modelValue.pubDate" type="date" placeholder="Pick a day" format="YYYY年MM月DD日"
-                    value-format="YYYY年MM月DD日" size="default" />
+                <el-date-picker v-model="bookParam.pubDate" type="date" placeholder="Pick a day" format="YYYY年MM月DD日"
+                    value-format="YYYY-MM-DD" size="default" />
             </el-form-item>
             <el-form-item label="图书版本：">
-                <el-input v-model="modelValue.price"></el-input>
+                <el-input v-model="bookParam.version"></el-input>
             </el-form-item>
             <el-form-item label="商品售价：">
-                <el-input v-model="modelValue.price"></el-input>
+                <el-input v-model="bookParam.price"></el-input>
             </el-form-item>
-            <el-form-item label="商品库存：">
-                <el-input v-model="modelValue.stock"></el-input>
-            </el-form-item>
-            <el-form-item label="属性图片：" class="pb-4">
-                <single-upload v-model="modelValue.pic" style="display: inline-block;margin-left: 10px">
+            <!-- <el-form-item label="商品库存：">
+                <el-input v-model="bookParam.stock"></el-input>
+            </el-form-item> -->
+            <el-form-item label="属性图片：" class="pb-4" v-if="isEdit">
+                <single-upload style="display: inline-block;margin-left: 10px" :actionURL="ACTION_URL" :actionData="{}">
                 </single-upload>
             </el-form-item>
             <el-form-item label="是否上架:">
-                <el-switch v-model="modelValue.isShow"></el-switch>
+                <el-switch v-model="bookParam.isShow"></el-switch>
             </el-form-item>
             <div class="text-center">
-                <el-button type="primary" @click="handleNext()">下一步，填写商品促销</el-button>
+                <el-button type="primary" @click="handleCommit(isEdit)">完成，提交图书</el-button>
             </div>
         </el-form>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { requestGetBookCategories } from '@/api/product'
-import { ElMessage } from 'element-plus';
+import { requestCreateBook, requestGetBook } from '@/api/product';
+import { useOptionStore } from '@/store/option';
+
+import { ElMessage, ElMessageBox } from 'element-plus';
+import _ from 'lodash';
 
 const props = defineProps({
-    modelValue: {
-        type: Object,
-        required: true
-    },
     isEdit: {
         type: Boolean,
         default: false
     }
 })
+const route = useRoute()
+const router = useRouter()
+const ACTION_URL = 'http://dev.api.yurzi.top:11451/v1/book/avatar/'
+const defaultBookParam = {
+    id: -1,
+    pressId: -1,
+    categoryId: -1,
+    isShow: 1,
+    desc: '',
+    name: '',
+    pubDate: '',
+    version: 0,
+    author: '',
+    price: 0,
+    page: 0,
+    // //会员价格{memberLevelId: 0,memberPrice: 0,memberLevelName: null}
+    // memberPriceList: [],
+    // //商品满减
+    // productFullReductionList: [{ fullPrice: 0, reducePrice: 0 }],
+    // //商品阶梯价格
+    // productLadderList: [{ count: 0, discount: 0, price: 0 }],
+    // promotionType: 0
+}
+const bookParam = ref<typeof defaultBookParam>(JSON.parse(JSON.stringify(defaultBookParam)))
 
-const emits = defineEmits(['nextStep'])
+const optionStore = useOptionStore()
 
-let hasEditCreated = false
 //选中商品分类的值
 const bookInfoForm = ref()
-const categoryOptions = ref<any[]>([])
-const pressOptions = ref<any[]>([])
-const rules = {
-    name: [
-        { required: true, message: '请输入图书名称', trigger: 'blur' },
-        { min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur' }
-    ],
-    productCategoryId: [{ required: true, message: '请选择图书分类', trigger: 'blur' }],
-    brandId: [{ required: true, message: '请选择图书出版社', trigger: 'blur' }],
-    description: [{ required: true, message: '请输入图书介绍', trigger: 'blur' }],
-    requiredProp: [{ required: true, message: '该项为必填项', trigger: 'blur' }]
-}
-
-
-
-const productId = computed(() => props.modelValue.id)
-
-watch(productId, (newValue, oldValue) => {
-    if (!props.isEdit || hasEditCreated || newValue < 0) return;
-    handleEditCreated();
-})
-
-//处理编辑逻辑
-function handleEditCreated() {
-    hasEditCreated = true;
-}
-async function getCategories() {
-    try {
-        const { data } = await requestGetBookCategories()
-        categoryOptions.value = data.record
-        console.log("category", data);
-    } catch (error) {
-        ElMessage({
-            type: "error",
-            message: String(error)
-        })
-    }
-}
-
-async function getPressList() {
-    try {
-        const { data } = await requestGetBookCategories()
-        pressOptions.value = data.record
-        console.log("category", data);
-    } catch (error) {
-        ElMessage({
-            type: "error",
-            message: String(error)
-        })
-    }
-}
 
 function handleNext() {
     bookInfoForm.value.validate((valid: boolean) => {
         if (valid) {
-            emits('nextStep')
+            // emits('nextStep')
         } else {
             ElMessage({
                 message: '验证失败',
@@ -136,9 +112,63 @@ function handleNext() {
     });
 }
 
+function handleCommit(isEdit: boolean) {
+    ElMessageBox.confirm('是否要提交该图书', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        if (isEdit) {
+            // updateProduct(route.query.id, productParam).then(response => {
+            //     ElMessage({
+            //         type: 'success',
+            //         message: '提交成功',
+            //         duration: 1000
+            //     });
+            //     router.back();
+            // });
+            ElMessage({
+                type: 'success',
+                message: '提交成功',
+                duration: 1000
+            });
+            router.back();
+        } else {
+            const { data } = await requestCreateBook(bookParam.value)
+            if (data.code >= 200 && data.code < 300) {
+                ElMessage({
+                    type: 'success',
+                    message: data.message,
+                    duration: 1000
+                });
+                location.reload();
+            } else {
+                ElMessage({
+                    type: 'error',
+                    message: data.message,
+                    duration: 1000
+                });
+            }
+        }
+    })
+}
 
-getCategories()
-getPressList()
+async function initBookInfo() {
+    if (props.isEdit) {
+        const bookId = route.query.id
+        if (bookId) {
+            const { data } = await requestGetBook({ id: Number(bookId) })
+            const bookData = data.record[0]
+            _.assign(bookParam.value, bookData)
+        }
+    }
+}
+
+optionStore.getBookCateOptions()
+optionStore.getPressOptions()
+initBookInfo()
+
+
 </script>
 
 <style scoped>

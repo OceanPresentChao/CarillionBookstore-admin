@@ -4,7 +4,7 @@
             <div>
                 <Icon icon="carbon:search" class="titleIcon"></Icon>
                 <span>筛选搜索</span>
-                <el-button style="float: right" @click="getBookList" type="primary" size="default">
+                <el-button style="float: right" @click="getShareBookList" type="primary" size="default">
                     查询结果
                 </el-button>
                 <el-button style="float: right;margin-right: 15px" @click="handleResetSearch()" size="default">
@@ -105,8 +105,8 @@
     </div>
 </template>
 <script lang="ts" setup >
-import { ElMessage, ExpandTrigger } from 'element-plus';
-import { requestDeleteBook, requestGetBookList, requestUpdateBookShow } from '@/api/product';
+import { ElMessage } from 'element-plus';
+import { requestDeleteBook, requestGetShareBookList, requestUpdateBookShow } from '@/api/product';
 import { useOptionStore } from "@/store/option"
 import _ from 'lodash';
 const IMG_PREFIX = 'http://dev.api.yurzi.top:11451'
@@ -132,7 +132,7 @@ const defaultListQuery = {
     s_name: "",
     s_categoryIds: [] as number[],
     s_pressName: '',
-    s_status: 0,
+    s_status: -1,
 };
 const listQuery = ref<typeof defaultListQuery>(JSON.parse(JSON.stringify(defaultListQuery)))
 const list = ref({
@@ -146,10 +146,10 @@ let multipleSelection: any[] = []
 const router = useRouter()
 const route = useRoute()
 
-async function getBookList() {
+async function getShareBookList() {
     try {
         list.value.listLoading = true;
-        const { data } = await requestGetBookList(_.assign(_.cloneDeep(listQuery.value), { s_categoryIds: listQuery.value.s_categoryIds.join(',') }))
+        const { data } = await requestGetShareBookList(_.assign(_.cloneDeep(listQuery.value), { s_categoryIds: listQuery.value.s_categoryIds.join(',') }))
         list.value.listLoading = false
         list.value.data = data.record
         list.value.total = data.total
@@ -184,7 +184,7 @@ async function handleDelete(index: number, row: any) {
             type: 'success',
             duration: 1000
         });
-        getBookList()
+        getShareBookList()
     } else {
         ElMessage({
             message: data.message,
@@ -202,7 +202,7 @@ async function handleShowStatusChange(index: number, row: any) {
             type: 'success',
             duration: 1000
         });
-        getBookList()
+        getShareBookList()
     } else {
         ElMessage({
             message: data.message,
@@ -214,13 +214,16 @@ async function handleShowStatusChange(index: number, row: any) {
 function handleSizeChange(val: number) {
     listQuery.value.page = 1;
     listQuery.value.limit = val;
-    getBookList();
+    getShareBookList();
 }
 function handleCurrentChange(val: number) {
     listQuery.value.page = val;
-    getBookList();
+    getShareBookList();
 }
-
+function searchBrandList() {
+    listQuery.value.page = 1;
+    getShareBookList();
+}
 function handleBatchOperate() {
     if (multipleSelection.length < 1) {
         ElMessage({
@@ -251,7 +254,6 @@ function handleBatchOperate() {
     for (let i = 0; i < multipleSelection.length; i++) {
         handleShowStatusChange(0, { id: multipleSelection[i].id, show: showStatus })
     }
-
 }
 
 if (route.query.s_pressName) {
@@ -260,7 +262,7 @@ if (route.query.s_pressName) {
 
 optionStore.getBookCateOptions()
 optionStore.getPublishStatusOptions()
-getBookList()
+getShareBookList()
 
 
 </script>

@@ -1,13 +1,12 @@
 <template>
     <div>
-        <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/" multiple
-            :file-list="fileList" :before-upload="beforeUpload" :on-preview="handlePictureCardPreview"
-            list-type="picture-card">
+        <el-upload class="upload-demo" drag :action="actionURL" :data="actionData" multiple :file-list="fileList"
+            :headers="{ 'Access-Control-Allow-Origin': '*' }" :before-upload="beforeUpload"
+            :on-preview="handlePictureCardPreview" list-type="picture-card">
             <Icon class="titleIcon" icon="carbon:fetch-upload-cloud"></Icon>
             <div class="el-upload__text">
                 Drop file here or <em>click to upload</em>
             </div>
-
         </el-upload>
         <el-dialog v-model="dialogVisible">
             <img w-full :src="dialogImageUrl" alt="Preview Image" />
@@ -16,7 +15,16 @@
 </template>
 <script lang="ts" setup>
 import { ElMessage, type UploadProps, type UploadUserFile } from 'element-plus';
-
+const props = defineProps({
+    actionURL: {
+        type: String,
+        default: 'http://dev.api.yurzi.top:11451'
+    },
+    actionData: {
+        type: Object,
+        default: {}
+    }
+})
 const fileList = ref<UploadUserFile[]>([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
