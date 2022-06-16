@@ -1,5 +1,6 @@
 
 import { requestGetDepartList, requestGetRoleList } from '@/api/company'
+import { requestGetFoodCategories } from '@/api/food'
 import { requestGetBookCategories, requestGetPressList } from '@/api/product'
 import { ElMessage } from 'element-plus'
 import { defineStore } from 'pinia'
@@ -34,6 +35,11 @@ interface PressOption {
     name: string
 }
 
+interface FoodCategoryOption {
+    id: number
+    title: string
+}
+
 
 export const useOptionStore = defineStore({
     id: Types.OPTION,
@@ -43,8 +49,14 @@ export const useOptionStore = defineStore({
         const roleOptions: RoleOption[] = []
         const publishStatusOptions: PublishStatusOption[] = []
         const pressOptions: PressOption[] = []
+        const foodCategoryOptions: FoodCategoryOption[] = []
         return {
-            bookCateOptions, departmentOptions, roleOptions, publishStatusOptions, pressOptions
+            bookCateOptions,
+            departmentOptions,
+            roleOptions,
+            publishStatusOptions,
+            pressOptions,
+            foodCategoryOptions
         }
     },
     getters: {
@@ -88,6 +100,17 @@ export const useOptionStore = defineStore({
             try {
                 const { data } = await requestGetPressList({ limit: 9999, page: 1, s_name: '' })
                 this.pressOptions = data.record
+            } catch (error) {
+                ElMessage({
+                    type: "error",
+                    message: String(error)
+                })
+            }
+        },
+        async getFoodCategoryOptions() {
+            try {
+                const { data } = await requestGetFoodCategories()
+                this.foodCategoryOptions = data.list
             } catch (error) {
                 ElMessage({
                     type: "error",

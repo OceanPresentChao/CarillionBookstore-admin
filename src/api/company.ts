@@ -48,8 +48,8 @@ export function requestDeleteStaff(params: { id: number }) {
 
 export function requestPutSalary(body: { id: number, amount: number }) {
     return request({
-        url: '/realApi/v1/company/deal/',
-        method: 'GET',
+        url: '/realApi/v1/company/salary/',
+        method: 'POST',
         data: body
     })
 }
@@ -57,6 +57,38 @@ export function requestPutSalary(body: { id: number, amount: number }) {
 export function requestGetDealList(params: { limit: number, page: number, s_typeId: number, s_orderId: number }) {
     return request({
         url: '/realApi/v1/company/deal/',
+        method: 'GET',
+        params
+    })
+}
+
+export function requestGetVipOrder(params: { order_id: number }) {
+    return request({
+        url: '/realApi/v1/order/vip/',
+        method: 'GET',
+        params
+    })
+}
+
+export function requestGetBookOrder(params: { order_id: number }) {
+    return request({
+        url: '/realApi/v1/order/book/',
+        method: 'GET',
+        params
+    })
+}
+
+export function requestGetFoodOrder(params: { order_id: number }) {
+    return request({
+        url: '/realApi/v1/order/food/',
+        method: 'GET',
+        params
+    })
+}
+
+export function requestGetSalaryOrder(params: { order_id: number }) {
+    return request({
+        url: '/realApi/v1/order/salary/',
         method: 'GET',
         params
     })

@@ -6,8 +6,11 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="小吃分类：">
-                <el-input v-model="foodParam.type">
-                </el-input>
+                <el-select v-model="foodParam.type" placeholder="请选择小吃分类">
+                    <el-option v-for="item in optionStore.foodCategoryOptions" :key="item.id" :label="item.title"
+                        :value="item.title">
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="小吃价格：">
                 <el-input-number :step="1" :min="1" v-model="foodParam.price" placeholder="请输入价格"></el-input-number>
@@ -31,6 +34,7 @@
 
 <script lang="ts" setup>
 import { requestCreateFood, requestGetFoodList, requestUpdateFood } from '@/api/food';
+import { useOptionStore } from '@/store/option';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import _ from 'lodash';
 
@@ -40,6 +44,7 @@ const props = defineProps({
         default: false
     }
 })
+const optionStore = useOptionStore()
 const route = useRoute()
 const router = useRouter()
 const ACTION_URL = 'http://dev.api.yurzi.top:11451/v1/book/avatar/'
@@ -57,7 +62,7 @@ const foodParam = ref<typeof defaultFoodParam>(JSON.parse(JSON.stringify(default
 const foodInfoForm = ref()
 
 function handleCommit(isEdit: boolean) {
-    ElMessageBox.confirm('是否要提交该图书', '提示', {
+    ElMessageBox.confirm('是否要提交该小吃', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -111,6 +116,7 @@ async function initFoodInfo() {
     }
 }
 
+optionStore.getFoodCategoryOptions()
 initFoodInfo()
 
 

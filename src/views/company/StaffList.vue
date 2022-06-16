@@ -47,7 +47,7 @@
                     @selection-change="handleSelectionChange" v-loading="list.listLoading" border>
                     <el-table-column type="selection" width="60" align="center" />
                     <el-table-column property="id" label="编号" width="110" align="center" />
-                    <el-table-column property="name" label="名称" align="center" />
+                    <el-table-column property="name" label="名称" width="160" align="center" />
                     <el-table-column property="age" label="年龄" width="120" align="center" />
                     <el-table-column property="depart_id" label="部门" width="170" align="center"
                         :formatter="(row: any, column: any, cellValue: number, index: number) => { return optionStore.getDepartFromId(cellValue) }" />
@@ -55,9 +55,11 @@
                         :formatter="(row: any, column: any, cellValue: number, index: number) => { return optionStore.getRoleFromId(cellValue) }" />
                     <el-table-column property="salary" label="薪水" width="120" align="center" />
                     <el-table-column property="phone" label="电话" width="170" align="center" />
-                    <el-table-column label="操作" width="180" align="center">
+                    <el-table-column label="操作" align="center">
                         <template #default="scope">
                             <el-button size="default" @click="handleUpdate(scope.$index, scope.row)">编辑
+                            </el-button>
+                            <el-button size="default" type="primary" @click="handleCharge(scope.$index, scope.row)">发放薪水
                             </el-button>
                             <el-popconfirm title="Are you sure to delete this?"
                                 @confirm="handleDelete(scope.$index, scope.row)">
@@ -92,8 +94,8 @@
     </div>
 </template>
 <script lang="ts" setup >
-import { ElMessage } from 'element-plus';
-import { requestCreateStaff, requestDeleteStaff, requestGetStaffList, requestUpdateStaff } from '@/api/company';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { requestCreateStaff, requestDeleteStaff, requestGetStaffList, requestPutSalary, requestUpdateStaff } from '@/api/company';
 import { useOptionStore } from '@/store/option';
 import _ from "lodash"
 const { t } = useI18n()
@@ -161,6 +163,37 @@ function handleSelectionChange(val: any[]) {
 
 function handleResetSearch() {
     listQuery.value = defaultListQuery
+}
+
+function handleCharge(index: number, row: any) {
+    ElMessageBox.prompt('请填写充值金额', '充值', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        inputPattern:
+            /[\d]+/,
+        inputErrorMessage: '不合法数额',
+    })
+        .then(async ({ value }) => {
+            const { data } = await requestPutSalary({ id: row.id, amount: Number(value) })
+            if (data.code >= 200 && data.code < 300) {
+                ElMessage({
+                    type: 'success',
+                    message: `发放薪水成功！金额为：${value}`,
+                })
+                getStaffList()
+            } else {
+                ElMessage({
+                    type: 'error',
+                    message: data.messgae,
+                })
+            }
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '充值取消',
+            })
+        })
 }
 
 function handleCreate() {

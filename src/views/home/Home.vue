@@ -132,31 +132,31 @@
                     <div style="padding: 20px">
                         <div>
                             <div style="color: #909399;font-size: 14px">本月订单总数</div>
-                            <div style="color: #606266;font-size: 24px;padding: 10px 0">10000</div>
+                            <div style="color: #606266;font-size: 24px;padding: 10px 0">227</div>
                             <div>
-                                <span class="color-success" style="font-size: 14px">+10%</span>
+                                <span class="color-success" style="font-size: 14px">+5%</span>
                                 <span style="color: #C0C4CC;font-size: 14px">同比上月</span>
                             </div>
                         </div>
                         <div style="margin-top: 20px;">
                             <div style="color: #909399;font-size: 14px">本周订单总数</div>
-                            <div style="color: #606266;font-size: 24px;padding: 10px 0">1000</div>
+                            <div style="color: #606266;font-size: 24px;padding: 10px 0">101</div>
                             <div>
-                                <span class="color-danger" style="font-size: 14px">-10%</span>
+                                <span class="color-danger" style="font-size: 14px">-9%</span>
                                 <span style="color: #C0C4CC;font-size: 14px">同比上周</span>
                             </div>
                         </div>
                         <div style="margin-top: 20px;">
                             <div style="color: #909399;font-size: 14px">本月销售总额</div>
-                            <div style="color: #606266;font-size: 24px;padding: 10px 0">100000</div>
+                            <div style="color: #606266;font-size: 24px;padding: 10px 0">54270</div>
                             <div>
-                                <span class="color-success" style="font-size: 14px">+10%</span>
+                                <span class="color-success" style="font-size: 14px">+7%</span>
                                 <span style="color: #C0C4CC;font-size: 14px">同比上月</span>
                             </div>
                         </div>
                         <div style="margin-top: 20px;">
                             <div style="color: #909399;font-size: 14px">本周销售总额</div>
-                            <div style="color: #606266;font-size: 24px;padding: 10px 0">50000</div>
+                            <div style="color: #606266;font-size: 24px;padding: 10px 0">24074</div>
                             <div>
                                 <span class="color-danger" style="font-size: 14px">-10%</span>
                                 <span style="color: #C0C4CC;font-size: 14px">同比上周</span>
@@ -211,13 +211,14 @@ onMounted(() => {
         const myChart = echarts.init(chartRef.value)
         myChart.setOption({
             title: {
-                text: 'Stacked Line'
+                text: '订单统计'
             },
             tooltip: {
                 trigger: 'axis'
             },
             legend: {
-                data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
+                data: ['图书订单', '食品订单', '充值订单', '薪水订单'],
+                right: 300
             },
             grid: {
                 left: '3%',
@@ -240,34 +241,28 @@ onMounted(() => {
             },
             series: [
                 {
-                    name: 'Email',
+                    name: '图书订单',
                     type: 'line',
                     stack: 'Total',
                     data: [120, 132, 101, 134, 90, 230, 210]
                 },
                 {
-                    name: 'Union Ads',
+                    name: '食品订单',
                     type: 'line',
                     stack: 'Total',
                     data: [220, 182, 191, 234, 290, 330, 310]
                 },
                 {
-                    name: 'Video Ads',
+                    name: '充值订单',
                     type: 'line',
                     stack: 'Total',
                     data: [150, 232, 201, 154, 190, 330, 410]
                 },
                 {
-                    name: 'Direct',
+                    name: '薪水订单',
                     type: 'line',
                     stack: 'Total',
                     data: [320, 332, 301, 334, 390, 330, 320]
-                },
-                {
-                    name: 'Search Engine',
-                    type: 'line',
-                    stack: 'Total',
-                    data: [820, 932, 901, 934, 1290, 1330, 1320]
                 }
             ]
         })

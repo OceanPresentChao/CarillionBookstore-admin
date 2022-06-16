@@ -45,3 +45,27 @@ export function requestDeleteFood(params: {
     })
 }
 
+export function requestGetFoodCategories() {
+    return request({
+        url: `/realApi/v1/food/type/`,
+        method: 'GET',
+    })
+}
+
+export function requestCreateFoodCategory(body: { title: string }) {
+    return request({
+        url: `/realApi/v1/food/type/`,
+        method: 'POST',
+        data: body
+    })
+}
+
+
+export function requestDeleteFoodCategory(params: { id: number }) {
+    return request({
+        url: `/realApi/v1/food/type/`,
+        method: 'DELETE',
+        params
+    })
+}
+

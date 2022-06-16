@@ -78,7 +78,7 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 },
                 meta: {
                     title: "添加图书",
-                    icon: "carbon:word-cloud",
+                    icon: "bxs:book-add",
                     roles: ["sys:goodsCategory"],
                 },
             },
@@ -186,6 +186,17 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                     parentId: 34,
                 },
             },
+            {
+                path: "/company/order",
+                component: () => import("@/views/company/OrderPage.vue"),
+                name: "order",
+                meta: {
+                    title: "部门管理",
+                    icon: "bi:building",
+                    roles: ["sys:goodsCategory"],
+                    hidden: true,
+                },
+            },
         ],
     },
     {
@@ -219,6 +230,16 @@ export const menuRoutes: Array<RouteRecordRaw> = [
                 },
                 props: {
                     isEdit: false
+                },
+            },
+            {
+                path: "/food/type",
+                component: () => import("@/views/snack/SnackTypeList.vue"),
+                name: "snacktype",
+                meta: {
+                    title: "小吃类型管理",
+                    icon: "fluent:food-pizza-24-regular",
+
                 },
             },
             {
