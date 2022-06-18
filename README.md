@@ -1,31 +1,23 @@
-# starter-unplugin
+# Carillion Bookstore Admin
 
-This template should help get you started developing with Vue 3 with unplugin in Vite.
+吉林大学2020级网页设计课设——书店后台管理系统
 
-Unplugin supports:vue-use、vue3、element-plus,and you can add more plugins by yourself.
+Created with Template [starter-unplugin](https://github.com/OceanPresentChao/starter-unplugin)
 
-## Recommended IDE Setup
+## Technology Stack
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
+- Vue3
+- TypeScript
+- Pinia
+- Tailwind CSS
 
-## Customize configuration
+## Content
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+1. Book Management
+2. User Management
+3. Snack Management
+4. Staff Management
 
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev 
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
+## Related
+[Backend](https://github.com/Yurzi/carillion_bookstore_backend)
+[Client Side](https://gitee.com/linexus/carillonbookstore)

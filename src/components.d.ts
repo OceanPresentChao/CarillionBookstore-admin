@@ -6,7 +6,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     404: typeof import('./views/error/404.vue')['default']
     About: typeof import('./views/about/About.vue')['default']
-    AddSnack: typeof import('./views/snack/AddSnack.vue')['default']
     BookDetail: typeof import('./views/product/book/BookDetail.vue')['default']
     BookInfoDetail: typeof import('./views/product/book/BookInfoDetail.vue')['default']
     BookList: typeof import('./views/product/book/BookList.vue')['default']
@@ -70,10 +69,8 @@ declare module 'vue' {
     SeatList: typeof import('./views/sale/SeatList.vue')['default']
     ShareBookList: typeof import('./views/product/book/ShareBookList.vue')['default']
     SingleUpload: typeof import('./components/SingleUpload.vue')['default']
-    SnackInfo: typeof import('./views/snack/SnackInfo.vue')['default']
     SnackInfoDetail: typeof import('./views/snack/SnackInfoDetail.vue')['default']
     SnackList: typeof import('./views/snack/SnackList.vue')['default']
-    SnackType: typeof import('./views/snack/SnackType.vue')['default']
     SnackTypeList: typeof import('./views/snack/SnackTypeList.vue')['default']
     StaffDialog: typeof import('./views/company/StaffDialog.vue')['default']
     StaffList: typeof import('./views/company/StaffList.vue')['default']
